@@ -428,7 +428,7 @@ async function importEpub(file,type,msg){
 let MODS=[],S={tab:"bible",sub:"",b:42,c:1,v:1,sel:{},sn:true,theme:"sepia",fs:19,hist:[],cm:null,cs:{},par:"stack",lh:1.55,ff:"sans",rate:1,vo:{},read:{},days:[],ac:"green",ic:true,warm:false,awake:false,sq:{sc:"all",ts:"all"}};
 try{Object.assign(S,JSON.parse(localStorage.getItem("bs_state")||"{}"))}catch(e){}
 S.sub="";S.reader=null;if(["search","hist","reader"].includes(S.tab))S.tab="bible";
-const save=()=>{try{localStorage.setItem("bs_state",JSON.stringify({tab:S.tab,b:S.b,c:S.c,v:S.v,sel:S.sel,sn:S.sn,theme:S.theme,fs:S.fs,hist:S.hist,cm:S.cm,cs:S.cs,hd:S.hd,tr:S.tr,al:S.al,par:S.par,lh:S.lh,ff:S.ff,rate:S.rate,vo:S.vo,read:S.read,days:S.days,ac:S.ac,ic:S.ic,warm:S.warm,awake:S.awake,sq:S.sq}))}catch(e){}};
+const save=()=>{try{localStorage.setItem("bs_state",JSON.stringify({tab:S.tab,b:S.b,c:S.c,v:S.v,sel:S.sel,sn:S.sn,theme:S.theme,fs:S.fs,hist:S.hist,cm:S.cm,cs:S.cs,hd:S.hd,tr:S.tr,al:S.al,par:S.par,lh:S.lh,ff:S.ff,rate:S.rate,vo:S.vo,read:S.read,days:S.days,ac:S.ac,g1:S.g1,ic:S.ic,warm:S.warm,awake:S.awake,sq:S.sq}))}catch(e){}};
 const $=s=>document.querySelector(s),main=$("#main");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mods=t=>MODS.filter(m=>m.type===t);
@@ -453,22 +453,22 @@ const TABS=[["bible","Bible"],["comm","Commentary"],["ref","Reference"],["dict",
 /* ================= Rahmen ================= */
 const MQ=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;if(MQ&&MQ.addEventListener)MQ.addEventListener("change",()=>{if(S.theme==="auto")applyTheme()});
 const FF={sans:"-apple-system,system-ui,sans-serif",serif:"Georgia,serif",palatino:"Palatino,'Palatino Linotype',serif",iowan:"'Iowan Old Style',Georgia,serif",times:"'Times New Roman',serif"};
-const AC={purple:["#9b59b6","#8e44ad","Violet"],blue:["#3f6e9a","#2f6fb5","Blue"],slate:["#2d3e50","#5b9bd5","Slate"],green:["#2e7d5b","#2e7d5b","Green"],red:["#a83a4a","#b03a48","Red"]};
+const AC={green:["#2e7d5b","#2e7d5b","Green"],blue:["#3f6e9a","#2f6fb5","Blue"],slate:["#2d3e50","#5b9bd5","Slate"],red:["#a83a4a","#b03a48","Red"],purple:["#9b59b6","#8e44ad","Violet"]};
 let WL=null;async function wake(){try{if(S.awake&&"wakeLock" in navigator&&!WL){WL=await navigator.wakeLock.request("screen");WL.addEventListener("release",()=>{WL=null})}else if(!S.awake&&WL){await WL.release();WL=null}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wake()});
-function applyTheme(){const d=document.documentElement;d.dataset.theme=S.theme==="auto"?(MQ&&MQ.matches?"dark":"sepia"):S.theme;d.dataset.ff=S.ff;if(S.ac==="purple"||S.ac==="red"){S.ac="green"}const a=AC[S.ac]||AC.green;
+function applyTheme(){const d=document.documentElement;d.dataset.theme=S.theme==="auto"?(MQ&&MQ.matches?"dark":"sepia"):S.theme;d.dataset.ff=S.ff;if(!S.g1){S.ac="green";S.g1=1;try{save()}catch(e){}}const a=AC[S.ac]||AC.green;
  d.style.setProperty("--fs",S.fs+"px");d.style.setProperty("--lh",S.lh);d.style.setProperty("--ffam",FF[S.ff]||FF.sans);d.style.setProperty("--pc",a[0]);d.style.setProperty("--acc",a[1]);
  const w=$("#warm");if(w)w.style.display=S.warm?"block":"none";wake()}
-const actComm=()=>{const c=mods("comm");const a=c.filter(m=>S.cs&&S.cs[m.id]===true);if(a.length)return a;if(S.cm==="all")return c;const o=c.find(m=>m.id===S.cm);return o?[o]:c.slice(0,1)};
-const activeBibles=()=>{const bs=mods("bible");const a=bs.filter(m=>S.sel[m.id]===true);return a.length?a:bs.slice(0,1)};
+const actComm=()=>{const c=mods("comm");const o=c.find(m=>m.id===S.cm);return o?[o]:c.slice(0,1)};
+const activeBibles=()=>{const bs=mods("bible");const a=bs.filter(m=>S.sel[m.id]===true);return a.length?a.slice(-1):bs.slice(0,1)};
 function drawVbar(t){const vb=$("#vbar"),on=t==="bible"||t==="comm";vb.style.display=on?"flex":"none";main.classList.toggle("vb",on);if(!on)return;
  const nm=m=>esc((m.short||m.title).slice(0,16));
  if(t==="bible"){const bs=mods("bible"),act=new Set(activeBibles().map(m=>m.id));
   vb.innerHTML=(bs.map(m=>`<button class="tg${act.has(m.id)?" on":""}" data-vb="${m.id}">${nm(m)}</button>`).join("")||'<span class="mut">No Bible</span>')+`<button data-vb="+">＋ Bible</button>`}
  else{const cs=mods("comm"),act=new Set(actComm().map(m=>m.id));vb.innerHTML=(cs.map(m=>`<button class="tg${act.has(m.id)?" on":""}" data-vc="${m.id}">${nm(m)}</button>`).join("")||'<span class="mut">No commentary</span>')+`<button data-vc="+">＋ Commentary</button>`}
  vb.querySelectorAll("[data-vb]").forEach(b=>b.onclick=()=>{const id=b.dataset.vb;if(id==="+"){S.tab="more";S.sub="dl:bible";save();drawAll();return}
-  const act=activeBibles();if(act.length===1&&act[0].id===id)return;const was=act.some(m=>m.id===id);mods("bible").forEach(m=>S.sel[m.id]=act.some(a=>a.id===m.id));S.sel[id]=!was;save();drawVbar("bible");draw(true)});
- vb.querySelectorAll("[data-vc]").forEach(b=>b.onclick=()=>{const id=b.dataset.vc;if(id==="+"){S.tab="more";S.sub="dl:comm";save();drawAll();return}const act=actComm();if(act.length===1&&act[0].id===id)return;const was=act.some(m=>m.id===id);S.cs={};act.forEach(m=>S.cs[m.id]=true);S.cs[id]=!was;S.cm=id;save();drawAll()})}
+  S.sel={};S.sel[id]=true;save();drawVbar("bible");draw(true)});
+ vb.querySelectorAll("[data-vc]").forEach(b=>b.onclick=()=>{const id=b.dataset.vc;if(id==="+"){S.tab="more";S.sub="dl:comm";save();drawAll();return}S.cm=id;S.cs={};save();drawAll()})}
 function drawBar(){const t=S.tab;let ttl="Bible Study";$("#trb").style.display=S.tr!==false&&["comm","reader","dict"].includes(t)?"flex":"none";
  if(t==="bible"){const a=activeBibles();ttl=a.length?a.map(m=>m.short||m.title).join(" · "):"Bible"}
  else if(t==="comm"){const ac=actComm();ttl=ac.length>1?ac.map(m=>m.short||m.title).join(" · "):ac[0]?ac[0].title:"Commentary"}
@@ -570,12 +570,12 @@ function bindMenu(root){root.querySelectorAll("[data-go]").forEach(b=>b.onclick=
  S.tab="more";S.sub=g;save();drawAll()})}
 function pickList(kind){const isB=kind==="bible",ms=mods(isB?"bible":"comm");
  const cur=()=>new Set((isB?activeBibles():actComm()).map(m=>m.id));
- const draw_=()=>{const act=cur();const p=openPanel("right",`<div class="ph"><button id="pp" aria-label="Get more" style="font-size:30px;line-height:1">＋</button><b>${isB?"Bibles":"Commentaries"}</b><button id="pc">Done</button></div><div class="pb pl">${ms.map(m=>`<button class="pr" data-m="${m.id}"><span><b>${esc((m.short||m.title).slice(0,24))}</b><small>${esc(m.title)}</small></span><i>${act.has(m.id)?"✓":""}</i></button>`).join("")||'<p class="mut" style="padding:14px">Nothing installed yet. Tap ＋.</p>'}<p class="mut" style="padding:10px">Select several to read them ${isB?"side by side":"one below the other"}. ＋ at top left = get more.</p></div>`);
+ const draw_=()=>{const act=cur();const p=openPanel("right",`<div class="ph"><button id="pp" aria-label="Get more" style="font-size:30px;line-height:1">＋</button><b>${isB?"Bibles":"Commentaries"}</b><button id="pc">Done</button></div><div class="pb pl">${ms.map(m=>`<button class="pr" data-m="${m.id}"><span><b>${esc((m.short||m.title).slice(0,24))}</b><small>${esc(m.title)}</small></span><i>${act.has(m.id)?"✓":""}</i></button>`).join("")||'<p class="mut" style="padding:14px">Nothing installed yet. Tap ＋.</p>'}<p class="mut" style="padding:10px">${isB?"Select several to read them side by side. ":"Choose one commentary. "}＋ at top left = get more.</p></div>`);
   p.style.width="100%";p.style.maxWidth="none";p.style.background="var(--bg)";
   $("#pc").onclick=()=>{closePanel();drawAll()};
   $("#pp").onclick=()=>{closePanel();S.tab="more";S.sub=isB?"dl:bible":"dl:comm";save();drawAll()};
-  p.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{const id=b.dataset.m,a=cur();if(a.has(id)){if(a.size>1)a.delete(id)}else a.add(id);
-   if(isB){S.sel={};a.forEach(i=>S.sel[i]=true)}else{S.cs={};a.forEach(i=>S.cs[i]=true);S.cm=[...a][0]}save();draw_()})};
+  p.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{const id=b.dataset.m,a=cur();if(!isB){S.cm=id;S.cs={};save();draw_();return}
+   S.sel={};S.sel[id]=true;save();draw_()})};
  draw_()}
 function pickModules(){pickList("bible")}
 function pickComm(){pickList("comm")}
@@ -674,23 +674,23 @@ function verseSheet(v,col,isBm,per){const s=$("#sheet");s.style.display="block";
 
 /* ================= Kommentar ================= */
 const covers=e=>e.v1>0&&e.chap<=S.c&&(S.c>e.chap||S.v>=e.v1)&&(S.c<e.ec||S.v<=e.ev);
-async function commHtml(sel,showTitle){
+async function commHtml(sel,showTitle,setFirst,skipEmpty){
  let es=await entsBC(sel.id,S.b,S.c);if(S.c>1)es=es.concat((await entsBC(sel.id,S.b,S.c-1)).filter(e=>e.ec>=S.c));
  es.sort((a,b)=>a.chap-b.chap||a.v1-b.v1);
  const rng=e=>e.v1?(e.chap+":"+e.v1+(e.ev!==e.v1||e.ec!==e.chap?"–"+(e.ec!==e.chap?e.ec+":":"")+e.ev:"")):"";
  let h=showTitle?`<h3 class="ch" style="color:var(--acc);margin-top:1.2em">${esc(sel.title)}</h3>`:"";
  if(!es.length)h+=`<p class="mut" style="text-align:center">No entry for this chapter${showTitle?"":" in this commentary"}.</p>`;
- const anyAct=es.some(covers);let first=true;
+ if(skipEmpty&&!es.length)return"";const anyAct=es.some(covers);let first=true;
  for(const e of es){const a=covers(e);const r=rng(e)||"Overview",tt=(e.title||"").trim(),good=e.v1&&tt&&tt!==r&&!/^\d+:\d+([–-]\d+)?$/.test(tt),pv=good?tt:(e.v1?plain(e.html).slice(0,70)+"…":"");
-  h+=`<details class="${a?"act":""}" open ${a&&first&&!showTitle?'id="first"':""}><summary><span class="r">${r}</span>${esc(pv)}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
+  h+=`<details class="${a?"act":""}" open ${a&&first&&setFirst?'id="first"':""}><summary><span class="r">${r}</span>${esc(pv)}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
  return h}
 async function vComm(){
  const cs=mods("comm");
  if(!cs.length)return empty("No commentary yet","Add one under Menu → Download → Commentaries or Import (EPUB). It then follows the selected verse automatically.","Open Download",()=>{S.tab="more";S.sub="dl:comm";drawAll()});
- const sl=actComm(),all=sl.length>1,sel=sl[0];
+ const sel=actComm()[0],sl=[sel];
  let h=`<div class="row" style="justify-content:flex-end"><button id="ca">Collapse all</button></div>`;
  h+=`<h3 class="ch">${esc(BKS[S.b].de)} ${S.c}${S.v?","+S.v:""}</h3>`;
- if(all){for(const m of sl)h+=await commHtml(m,true)}else h+=await commHtml(sel,false);
+ let any=false,sf=true;for(const m of sl){const x=await commHtml(m,false,sf,false);if(x){any=true;h+=x;if(x.includes('id="first"'))sf=false}}
  main.innerHTML=h;
  const ca=$("#ca");if(ca)ca.onclick=()=>{const ds=[...main.querySelectorAll("details")],open=ds.some(d=>d.open);ds.forEach(d=>d.open=!open);ca.textContent=open?"Expand all":"Collapse all"};
  const f=$("#first");if(f)setTimeout(()=>f.scrollIntoView({block:"start"}),30)}
@@ -865,6 +865,19 @@ const CAT=[
  {file:"candlish-1john.json",type:"comm",title:"The First Epistle of John – Robert Candlish",short:"Candlish",desc:"46 lectures on the First Epistle of John.",mb:1.1},
  {file:"ntcomplete.json",type:"comm",title:"New Testament Commentary (Complete)",short:"NT-K",desc:"Commentary on every verse from Matthew to Jude (Revelation is not in the book).",mb:37},
  {file:"headings-nlt.json",type:"heads",title:"Section headings (from NLT Study Bible)",short:"Headings",desc:"Section titles for the whole Bible (2,400 headings), shown above passages in any Bible.",mb:0.1},
+ {file:"macarthur-nt.json",type:"comm",title:"MacArthur New Testament Commentary",short:"MacArthur",desc:"Verse-by-verse commentary on the New Testament (1,175 sections).",mb:33},
+ {file:"alexander-hebrews.json",type:"comm",title:"Eric Alexander – Exposition of Hebrews",short:"Alexander",desc:"Sermons on Hebrews.",mb:0.7},
+ {file:"nivac-psalms2.json",type:"comm",title:"NIV Application Commentary – Psalms Vol. 2",short:"NIVAC-Ps2",desc:"Psalms 42–106.",mb:3},
+ {file:"nivac-pentateuch.json",type:"comm",title:"NIV Application Commentary – Pentateuch",short:"NIVAC-Pent",desc:"Genesis, Exodus, Leviticus, Numbers, Deuteronomy.",mb:8.5},
+ {file:"nivac-pauline.json",type:"comm",title:"NIV Application Commentary – Pauline Epistles",short:"NIVAC-Paul",desc:"Romans to Philemon.",mb:9},
+ {file:"bridges-proverbs.json",type:"comm",title:"Charles Bridges – Exposition of Proverbs",short:"Prov-Bridges",desc:"Verse-by-verse commentary on Proverbs.",mb:1.4},
+ {file:"hodge-romans.json",type:"comm",title:"Charles Hodge – Commentary on Romans",short:"Hodge",desc:"Classic Reformed commentary on Romans.",mb:1.7},
+ {file:"carson-matthew.json",type:"comm",title:"D. A. Carson – Matthew",short:"Carson",desc:"Expositor's Bible Commentary on Matthew.",mb:2.6},
+ {file:"nivac-numbers.json",type:"comm",title:"NIV Application Commentary – Numbers",short:"NIVAC-Num",desc:"Roy Gane / Dennis Cole, Numbers.",mb:1.7},
+ {file:"nivac-chronicles.json",type:"comm",title:"NIV Application Commentary – 1 & 2 Chronicles",short:"NIVAC-Chr",desc:"1 and 2 Chronicles.",mb:1.3},
+ {file:"nivac-prophets.json",type:"comm",title:"NIV Application Commentary – Major Prophets",short:"NIVAC-Proph",desc:"Isaiah, Jeremiah, Lamentations, Ezekiel, Daniel.",mb:5.8},
+ {file:"ot-for-everyone.json",type:"comm",title:"The Old Testament for Everyone (17 volumes)",short:"OT4All",desc:"John Goldingay, Genesis to Malachi.",mb:8.9},
+ {file:"davenant-determinations.json",type:"other",lang:"Books",title:"Davenant – Determinations of Certain Theological Questions",short:"Davenant",desc:"John Davenant, theological questions.",mb:0.8},
  {file:"strongs.json",type:"dict",title:"Strong’s Dictionary",short:"Strong",desc:"Greek (5,523) and Hebrew (8,674): root word, pronunciation, meaning, concordance.",mb:2.3}];
 async function installCat(c,msg){
  let j=c.json;
