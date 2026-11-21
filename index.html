@@ -430,9 +430,9 @@ async function vDict(){
  main.innerHTML=`<input type="search" id="dq" placeholder="Wort oder Nummer (z. B. G25, agape, love) …" value="${esc(S.dq||"")}"><div id="dr"></div>`;
  const run=async()=>{const q=$("#dq").value.trim().toLowerCase();S.dq=$("#dq").value.trim();const out=$("#dr");if(!q){out.innerHTML='<p class="mut">Tippe einen Begriff oder eine Strong-Nummer ein.</p>';return}
   const hits=[];const nq=q.replace(/^([gh])\s?0*(\d+)$/,(m,a,b)=>a.toUpperCase()+b);
-  for(const m of ds){await eachEnt(m.id,e=>{if(e.num&&e.num===nq||e.keyl.includes(q))hits.push(e);return hits.length<60})}
+  for(const m of ds){await eachEnt(m.id,e=>{if(e.num&&e.num===nq||e.keyl.includes(q)){e.mt=m.short||m.title;hits.push(e)}return hits.length<80})}
   hits.sort((a,b)=>(b.num===nq)-(a.num===nq)||a.keyl.length-b.keyl.length);
-  out.innerHTML=hits.length?hits.map((e,i)=>`<details class="card" ${i===0&&(e.num===nq||hits.length<4)?"open":""}><summary>${esc(e.key)}</summary><div class="dk">${e.html}</div></details>`).join(""):'<p class="mut">Keine Treffer.</p>';linkify(out);
+  out.innerHTML=hits.length?hits.map((e,i)=>`<details class="card" ${i===0&&(e.num===nq||hits.length<4)?"open":""}><summary>${esc(e.key.slice(0,70))} <span class="mut">· ${esc(e.mt||"")}</span></summary><div class="dk">${e.html}</div></details>`).join(""):'<p class="mut">Keine Treffer.</p>';linkify(out);
   out.querySelectorAll("[data-conc]").forEach(b=>b.onclick=()=>concordance(b.dataset.conc))};
  let t;$("#dq").oninput=()=>{clearTimeout(t);t=setTimeout(run,250)};run()}
 async function concordance(num){
@@ -463,12 +463,19 @@ async function vHist(){main.innerHTML=S.hist.length?S.hist.map((h,i)=>`<div clas
 
 /* ================= Menü-Seiten ================= */
 const CAT=[
- {file:"kjv-strongs.json",type:"bible",title:"KJV + Strong's",short:"KJV",desc:"King James Version (1769) mit Strong's-Nummern an jedem Wort. Englisch.",mb:6.4},
- {file:"strongs.json",type:"dict",title:"Strong's Wörterbuch",short:"Strong",desc:"Griechisch (5.523) und Hebräisch (8.674): Grundwort, Aussprache, Bedeutung, Konkordanz.",mb:2.3},
- {file:"schlachter1951.json",type:"bible",title:"Schlachter 1951",short:"Schl",desc:"Deutsche Bibel (gemeinfrei).",mb:4.2},
- {file:"elberfelder1905.json",type:"bible",title:"Elberfelder 1905",short:"Elb",desc:"Deutsche Bibel, unrevidiert (gemeinfrei).",mb:4.3},
- {file:"luther1545.json",type:"bible",title:"Luther 1545",short:"Lut",desc:"Deutsch, moderne Rechtschreibung (gemeinfrei).",mb:4.0},
- {file:"menge1939.json",type:"bible",title:"Menge 1939",short:"Menge",desc:"Deutsche Bibel (Menge-Bibel).",mb:4.7}];
+ {file:"kjv-strongs.json",type:"bible",lang:"Englisch",title:"KJV + Strong's",short:"KJV",desc:"King James Version (1769) mit Strong's-Nummern an jedem Wort.",mb:6.4},
+ {file:"kjv-plain.json",type:"bible",lang:"Englisch",title:"KJV (ohne Nummern)",short:"KJVo",desc:"King James Version, reiner Text ohne Strong-Nummern.",mb:4.1},
+ {file:"asv1901.json",type:"bible",lang:"Englisch",title:"American Standard Version 1901",short:"ASV",desc:"Englisch, wörtlich (gemeinfrei).",mb:4.1},
+ {file:"web.json",type:"bible",lang:"Englisch",title:"World English Bible",short:"WEB",desc:"Modernes Englisch (gemeinfrei).",mb:4.0},
+ {file:"lsg1910.json",type:"bible",lang:"Französisch",title:"Louis Segond 1910",short:"LSG",desc:"Die klassische französische Bibel (gemeinfrei).",mb:4.2},
+ {file:"martin1744.json",type:"bible",lang:"Französisch",title:"Martin 1744",short:"Martin",desc:"Französisch, David Martin (gemeinfrei).",mb:4.6},
+ {file:"schlachter1951.json",type:"bible",lang:"Deutsch",title:"Schlachter 1951",short:"Schl",desc:"Deutsche Bibel (gemeinfrei).",mb:4.2},
+ {file:"elberfelder1905.json",type:"bible",lang:"Deutsch",title:"Elberfelder 1905",short:"Elb",desc:"Deutsche Bibel, unrevidiert (gemeinfrei).",mb:4.3},
+ {file:"luther1545.json",type:"bible",lang:"Deutsch",title:"Luther 1545",short:"Lut",desc:"Deutsch, moderne Rechtschreibung (gemeinfrei).",mb:4.0},
+ {file:"menge1939.json",type:"bible",lang:"Deutsch",title:"Menge 1939",short:"Menge",desc:"Deutsche Bibel (Menge-Bibel).",mb:4.7},
+ {file:"stepbible-kurz.json",type:"dict",title:"STEPBible Kurzlexikon",short:"STEP",desc:"Griechisch + Hebräisch, 18.000 Einträge mit Bedeutung und Belegstellen (Tyndale House, CC BY 4.0).",mb:6.6},
+ {file:"bdb.json",type:"dict",title:"Brown-Driver-Briggs",short:"BDB",desc:"Das klassische Hebräisch-Lexikon, mit Strong-Nummern verknüpft (Open Scriptures).",mb:2.0},
+ {file:"strongs.json",type:"dict",title:"Strong's Wörterbuch",short:"Strong",desc:"Griechisch (5.523) und Hebräisch (8.674): Grundwort, Aussprache, Bedeutung, Konkordanz.",mb:2.3}];
 async function installCat(c,msg){
  msg(c.title+": lade herunter …");await tick();
  let r=null;try{r=await fetch("data/"+c.file);if(!r.ok)r=null}catch(e){r=null}
@@ -479,10 +486,39 @@ async function installCat(c,msg){
  let ents=[],n=0;const E=o=>{o.id=id+"|"+(n++);o.mod=id;ents.push(o)};
  if(c.type==="bible"){mod.strongs=!!j.s;
   for(let b=0;b<66;b++)(j.b[b]||[]).forEach((vs,ci)=>{const verses=[];vs.forEach((t,k)=>{if(t)verses.push([k+1,t])});if(verses.length)E({kind:"b",book:b,chap:ci+1,verses})})}
+ else if(j.r){for(const[num,key,html]of j.r){const pure=/^[GH]\d+$/.test(num);
+  E({kind:"d",book:-1,chap:0,key:(num?num+" ":"")+key,keyl:((num?num+" ":"")+key+" "+plain(html).slice(0,220)).toLowerCase(),num,html:html+(pure?`<p><button data-conc="${num}">Alle Verse mit ${num}</button></p>`:"")})}}
  else for(const[num,lem,tr,pr,der,def,kj]of j.d){
   const key=num+" "+lem+" "+tr;
   E({kind:"d",book:-1,chap:0,key,keyl:(key+" "+def+" "+kj).toLowerCase(),num,html:`<p><b style="font-size:1.2em">${esc(lem)}</b> <span class="mut">${esc(tr)}${pr?" · "+esc(pr):""}</span></p><p>${esc(def)}</p>${kj?`<p class="mut"><b>KJV:</b> ${esc(kj)}</p>`:""}${der?`<p class="mut"><b>Herkunft:</b> ${esc(der)}</p>`:""}<p><button data-conc="${num}">Alle Verse mit ${num}</button></p>`})}
  await bulkEnts(ents);mod.count=n;await putOne("mods",mod);return mod}
+const USFM="GEN EXO LEV NUM DEU JOS JDG RUT 1SA 2SA 1KI 2KI 1CH 2CH EZR NEH EST JOB PSA PRO ECC SNG ISA JER LAM EZK DAN HOS JOL AMO OBA JON MIC NAM HAB ZEP HAG ZEC MAL MAT MRK LUK JHN ACT ROM 1CO 2CO GAL EPH PHP COL 1TH 2TH 1TI 2TI TIT PHM HEB JAS 1PE 2PE 1JN 2JN 3JN JUD REV".split(" ");
+const HELLO=()=>(window.HELLOAO||"https://bible.helloao.org");
+const flat=c=>(Array.isArray(c)?c:[c]).map(x=>typeof x==="string"?x:(x&&typeof x.text==="string"?x.text:(x&&x.lineBreak?"\n":""))).join("");
+const paras=t=>t.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(x=>"<p>"+esc(x)+"</p>").join("");
+async function installRemoteComm(c,msg){
+ const api=p=>HELLO()+"/api/c/"+c.remote+p;let books;
+ try{const r=await fetch(api("/books.json"));if(!r.ok)throw new Error("HTTP "+r.status);books=(await r.json()).books||[]}
+ catch(e){throw new Error("Keine Verbindung zu bible.helloao.org ("+e.message+"). Bist du online?")}
+ const jobs=[];const id="m"+Date.now()+Math.random().toString(36).slice(2,5);let n=0;const ents=[];
+ const E=o=>{o.id=id+"|"+(n++);o.mod=id;ents.push(o)};
+ for(const bk of books){const bi=USFM.indexOf(bk.id);if(bi<0)continue;
+  if(bk.introduction)E({kind:"c",book:bi,chap:1,v1:0,ec:1,ev:0,title:"Einleitung",html:paras(bk.introduction)});
+  const a=bk.firstChapterNumber||1,z=bk.lastChapterNumber||bk.numberOfChapters||0;for(let ch=a;ch<=z;ch++)jobs.push([bi,bk.id,ch])}
+ if(!jobs.length)throw new Error("Dieser Kommentar enthält keine Kapitel");
+ let idx=0,done=0,fail=0;
+ const worker=async()=>{while(idx<jobs.length){const j=jobs[idx++];
+  try{const r=await fetch(api("/"+j[1]+"/"+j[2]+".json"));if(!r.ok){fail++}else{const jr=await r.json(),d=jr.chapter;
+   if(d.introduction)E({kind:"c",book:j[0],chap:d.number,v1:0,ec:d.number,ev:0,title:"",html:paras(flat(d.introduction))});
+   const vs=(d.content||[]).filter(v=>v.type==="verse"&&flat(v.content).trim()).sort((a,b)=>a.number-b.number);
+   vs.forEach((v,k)=>{const nx=vs[k+1];E({kind:"c",book:j[0],chap:d.number,v1:v.number,ec:d.number,ev:nx&&nx.number>v.number?nx.number-1:Math.max(v.number,jr.numberOfVerses||v.number),title:"",html:paras(flat(v.content))})})}}
+  catch(e){fail++}
+  done++;if(done%8===0){msg(c.title+": Kapitel "+done+"/"+jobs.length);await tick()}}};
+ await Promise.all(Array.from({length:6},worker));
+ if(fail>jobs.length/3)throw new Error("Download unvollständig ("+fail+" von "+jobs.length+" Kapiteln fehlen)");
+ msg(c.title+": speichere …");await tick();await bulkEnts(ents);
+ const mod={id,title:c.title,short:c.short||c.title.slice(0,8),type:"comm",added:Date.now(),count:n,src:"remote:"+c.remote};
+ await putOne("mods",mod);return mod}
 const TN={bible:"Bibel",comm:"Kommentar",dict:"Lexikon",other:"Nachschlagewerk"};
 const back=()=>`<button class="bk" id="mb">‹ Menü</button>`;
 async function vMore(){const s=S.sub;
@@ -490,7 +526,14 @@ async function vMore(){const s=S.sub;
  const page=async html=>{main.innerHTML=back()+html;$("#mb").onclick=()=>{S.sub="";save();draw()}};
  if(s.startsWith("dl:")){const t=s.slice(3),items=CAT.filter(c=>c.type===t);
   await page(`<h3 class="ch">Download · ${{bible:"Bibeln",comm:"Kommentare",dict:"Lexika",other:"Nachschlagewerke"}[t]}</h3><div class="mut">Gemeinfreie Module. Sie werden einmal geladen und danach offline gespeichert.</div>`+
-   (items.length?items.map(c=>{const have=MODS.some(m=>m.src===c.file);return`<div class="card"><b>${esc(c.title)}</b> <span class="mut">· ca. ${c.mb} MB</span><div class="mut">${esc(c.desc)}</div><div style="margin-top:6px">${have?'<span class="mut">✓ installiert</span>':`<button class="p" data-c="${CAT.indexOf(c)}">Installieren</button>`}</div></div>`}).join(""):`<div class="card mut">Im Katalog gibt es hier noch nichts. Eigene EPUBs fügst du über „Import (EPUB)" hinzu.</div>`)+`<div id="cmsg" class="mut"></div>`);
+   (t==="comm"?`<div class="card"><b>Online-Katalog</b><div class="mut">Klassische Kommentare (gemeinfrei) von bible.helloao.org. Braucht Internet.</div><div style="margin-top:6px"><button class="p" id="oc">Liste laden</button></div></div><div id="ol"></div>`:"")+(items.length?items.map((c,ix)=>{const hd=c.lang&&c.lang!==(items[ix-1]||{}).lang?`<div class="sh" style="padding-left:2px">${c.lang}</div>`:"";const have=MODS.some(m=>m.src===c.file);return hd+`<div class="card"><b>${esc(c.title)}</b> <span class="mut">· ca. ${c.mb} MB</span><div class="mut">${esc(c.desc)}</div><div style="margin-top:6px">${have?'<span class="mut">✓ installiert</span>':`<button class="p" data-c="${CAT.indexOf(c)}">Installieren</button>`}</div></div>`}).join(""):`<div class="card"><b>Eigene EPUB-Bücher</b><p class="mut">Gemeinfreie Bücher findest du zum Beispiel hier. Lade die EPUB in Safari herunter (in „Dateien" sichern) und füge sie unter Menü → Import hinzu:</p><p><a href="https://www.gutenberg.org" target="_blank" rel="noopener">gutenberg.org</a><br><a href="https://standardebooks.org" target="_blank" rel="noopener">standardebooks.org</a><br><a href="https://ccel.org" target="_blank" rel="noopener">ccel.org</a> (Christian Classics Ethereal Library)</p></div>`)+`<div id="cmsg" class="mut"></div>`);
+  const oc=$("#oc");if(oc)oc.onclick=async()=>{const ol=$("#ol");ol.innerHTML='<p class="mut">Lade Liste …</p>';
+   try{const r=await fetch(HELLO()+"/api/available_commentaries.json");if(!r.ok)throw new Error("HTTP "+r.status);const list=(await r.json()).commentaries||[];
+    ol.innerHTML=list.map((c,i)=>{const have=MODS.some(m=>m.src==="remote:"+c.id);return`<div class="card"><b>${esc(c.englishName||c.name)}</b><div class="mut">${esc(c.languageEnglishName||c.language)} · ${c.numberOfBooks} Bücher · ${c.totalNumberOfChapters} Kapitel${c.licenseNotes?"":""}</div><div class="mut">Lizenz: ${esc(c.licenseUrl||"")}</div><div style="margin-top:6px">${have?'<span class="mut">✓ installiert</span>':`<button class="p" data-rc="${i}">Installieren</button>`}</div></div>`}).join("")||'<p class="mut">Leer.</p>';
+    ol.querySelectorAll("[data-rc]").forEach(b=>b.onclick=async()=>{const c=list[b.dataset.rc],m=$("#cmsg");ol.querySelectorAll("[data-rc]").forEach(x=>x.disabled=true);
+     try{const mod=await installRemoteComm({remote:c.id,title:c.englishName||c.name,short:(c.englishName||c.name).split(" ")[0]},t=>m.textContent=t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);if(!S.cm)S.cm=mod.id;save();await vMore();$("#cmsg").textContent="✓ "+mod.title+" installiert"}
+     catch(err){m.textContent="Fehler: "+err.message;ol.querySelectorAll("[data-rc]").forEach(x=>x.disabled=false)}})}
+   catch(e){ol.innerHTML='<p class="mut">Liste nicht erreichbar: '+esc(e.message)+'. Bist du online? Falls der Fehler bleibt, kann die Seite das Laden im Browser blockieren – dann bitte EPUB-Kommentare über „Import" hinzufügen.</p>'}};
   main.querySelectorAll("[data-c]").forEach(b=>b.onclick=async()=>{const c=CAT[b.dataset.c],m=$("#cmsg");main.querySelectorAll("[data-c]").forEach(x=>x.disabled=true);
    try{const mod=await installCat(c,t=>m.textContent=t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);if(mod.type==="bible"&&mods("bible").length===1)S.sel[mod.id]=true;save();await vMore();$("#cmsg").textContent="✓ "+mod.title+" installiert"}
    catch(err){m.textContent="Fehler: "+err.message;main.querySelectorAll("[data-c]").forEach(x=>x.disabled=false)}});return}
@@ -498,7 +541,12 @@ async function vMore(){const s=S.sub;
   await page(`<h3 class="ch">Installiert</h3>${est}`+(MODS.map(m=>`<div class="card"><b>${esc(m.title)}</b><div class="mut">${TN[m.type]} · ${m.count} Einträge${m.strongs?" · Strong-Nummern":""}</div><div class="row" style="margin-top:6px"><button data-d="${m.id}" class="mut">Löschen</button></div></div>`).join("")||'<p class="mut">Noch nichts installiert.</p>'));
   main.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{if(!b.dataset.s){b.dataset.s=1;b.textContent="Wirklich löschen?";return}await delMod(b.dataset.d);MODS=await allOf("mods");draw()});return}
  if(s==="imp"){await page(`<h3 class="ch">Import (EPUB)</h3><div class="card"><select id="ty" class="f"><option value="auto">Typ automatisch erkennen</option><option value="bible">Bibel</option><option value="comm">Kommentar</option><option value="dict">Lexikon / Wörterbuch</option><option value="other">Sonstiges Buch (nur lesen)</option></select>
-  <label class="btn p" style="display:block;text-align:center;margin-top:8px">EPUB wählen<input id="file" type="file" accept=".epub,application/epub+zip" multiple hidden></label><div id="msg" class="mut" style="margin-top:6px"></div></div><p class="mut">„Automatisch" erkennt Kommentare mit Vers-Bereichen. Für Bibeln und Lexika den Typ selbst wählen.</p>`);
+  <label class="btn p" style="display:block;text-align:center;margin-top:8px">EPUB wählen<input id="file" type="file" accept=".epub,application/epub+zip" multiple hidden></label><div id="msg" class="mut" style="margin-top:6px"></div></div>
+  <div class="card"><b>Von Internet-Adresse laden</b><input type="search" id="eu" placeholder="https://… .epub" style="margin-top:6px"><div style="margin-top:8px"><button id="eg">Laden</button></div><div class="mut" style="margin-top:6px">Klappt nur, wenn die Seite das Laden erlaubt. Sonst: Datei in Safari herunterladen und oben auswählen.</div></div><p class="mut">„Automatisch" erkennt Kommentare mit Vers-Bereichen. Für Bibeln und Lexika den Typ selbst wählen.</p>`);
+  $("#eg").onclick=async()=>{const m=$("#msg"),u=$("#eu").value.trim();if(!u)return;
+   try{m.textContent="Lade …";const r=await fetch(u);if(!r.ok)throw new Error("HTTP "+r.status);const bl=await r.blob();bl.name=decodeURIComponent((u.split("?")[0].split("/").pop()||"buch.epub"));
+    const f=new File([bl],bl.name);const mod=await importEpub(f,$("#ty").value,t=>m.textContent=t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);m.textContent="✓ "+mod.title+" ("+TN[mod.type]+", "+mod.count+")"}
+   catch(err){m.textContent="Nicht möglich: "+err.message+" – lade die Datei in Safari herunter und wähle sie oben aus."}};
   $("#file").onchange=async e=>{const m=$("#msg");for(const f of e.target.files){try{const mod=await importEpub(f,$("#ty").value,t=>m.textContent=f.name+": "+t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);m.textContent="✓ "+mod.title+" ("+TN[mod.type]+", "+mod.count+")";if(mod.type==="bible"&&mods("bible").length===1)S.sel[mod.id]=true}catch(err){m.textContent="Fehler bei "+f.name+": "+err.message;return}}};return}
  if(s==="disp"){await page(`<h3 class="ch">Anzeige</h3><div class="card"><div class="row"><b style="flex:1">Schriftgröße: <span id="fv">${S.fs}</span></b><button id="f1">A−</button><button id="f2">A+</button></div></div>
   <div class="card"><b>Design</b><div class="row" style="margin-top:6px">${[["sepia","Sepia"],["light","Hell"],["dark","Dunkel"]].map(([k,l])=>`<button class="tg${S.theme===k?" on":""}" data-th="${k}">${l}</button>`).join("")}</div></div>
