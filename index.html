@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Bibelstudium</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bibelstudium">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#9b59b6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--bg:#fbf0dc;--fg:#262c3b;--mut:#7d7566;--acc:#8e44ad;--card:#fff9ee;--line:#e8dcc2;--sel:#d9e6f5;--ref:#1f8a4c;--navy:#2e3f56;--tabbg:#eff0f2;--tabfg:#9a9ea3;--fs:19px;--h1:#ffe27a;--h2:#b9f0b0;--h3:#b6dcff;--h4:#ffc2dc}
+html[data-theme=light]{--bg:#fff;--card:#f7f7f9;--line:#e3e3e8;--sel:#dbe8fb}
+html[data-theme=dark]{--bg:#16181d;--fg:#e4e6eb;--mut:#9aa0ab;--card:#20242b;--line:#323843;--sel:#2a3a55;--ref:#5fd08a;--navy:#2a3342;--tabbg:#1d2026;--h1:#7a6a1e;--h2:#2e6a2b;--h3:#235684;--h4:#7a2d52}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+#bar{position:fixed;top:0;left:0;right:0;z-index:10;background:#9b59b6;color:#fff;height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 6px 0;display:flex;align-items:center;gap:2px}
+#bar button{background:none;border:0;color:#fff;width:44px;height:48px;padding:11px;cursor:pointer}
+#bar svg{width:100%;height:100%}
+#ttl{flex:1;text-align:center;font-size:20px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+main{padding:calc(68px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));max-width:760px;margin:auto;min-height:100vh}
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--tabbg);border-top:1px solid var(--line);display:flex;padding:4px 2px calc(env(safe-area-inset-bottom) + 2px)}
+#tabs button{flex:1;border:0;background:none;color:var(--tabfg);display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 0;font-size:11.5px;cursor:pointer;min-width:0}
+#tabs button svg{width:34px;height:34px}
+#tabs button.on{color:#8e44ad}
+html[data-theme=dark] #tabs button.on{color:#c58be0}
+.arr{position:fixed;top:50%;z-index:6;width:30px;height:62px;margin-top:-31px;background:#8888881f;color:#6a8fd8;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;user-select:none}
+#al{left:0;border-radius:0 31px 31px 0}#ar{right:0;border-radius:31px 0 0 31px}
+button,.btn{font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer}
+button.p,.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.tg.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:9px 0}
+.mut{color:var(--mut);font-size:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type=search],textarea,select.f{width:100%;font:inherit;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.item{padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+h3.ch{text-align:center;font-size:1.05em;margin:.2em 0 .8em;color:var(--mut);letter-spacing:.03em}
+/* Verse */
+.vp{font-size:var(--fs);line-height:1.55;padding:5px 4px;margin:2px 0;border-radius:4px}
+.vp.sel{background:var(--sel)}
+a.vr{color:var(--ref);text-decoration:underline;font-size:.92em;margin-right:3px}
+.mk{font-size:.8em;color:var(--acc)}
+.tx.h1{background:var(--h1)}.tx.h2{background:var(--h2)}.tx.h3{background:var(--h3)}.tx.h4{background:var(--h4)}
+.tx[class*=" h"]{color:var(--fg);border-radius:3px}
+.ml{margin:2px 0}.tl{font:700 11px -apple-system,sans-serif;color:var(--acc);text-transform:uppercase;margin-right:3px}
+a.sn{font:.62em -apple-system,sans-serif;color:var(--ref);text-decoration:none;vertical-align:super;margin-left:1px;padding:1px 0}
+a.xref{color:var(--ref);text-decoration:none;border-bottom:1px dotted var(--ref)}
+/* Kommentar */
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:9px 0}
+details.act{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+summary{padding:11px 12px;cursor:pointer;font-weight:600}
+summary .r{color:var(--ref);margin-right:6px}
+.cm{padding:0 12px 12px;font-size:var(--fs);line-height:1.6}
+.cm h3.v{font:700 1em -apple-system,sans-serif;margin:1.2em 0 .3em;color:var(--acc)}
+.cm .vs{font-style:italic;border-left:3px solid var(--acc);padding-left:10px;margin:.5em 0}
+.cm .brief{font-weight:600}.cm .pl{background:var(--sel);padding:6px 10px;border-radius:8px}
+.cm .side{border:1px solid var(--line);border-radius:8px;padding:2px 10px;font-size:.92em}
+.cm .lab{font:700 .8em -apple-system,sans-serif;text-transform:uppercase;color:var(--mut);margin:.4em 0}
+.cm .banner{display:none}.cm h1,.cm h2,.cm h4{font-size:1.1em}
+.dk{font-size:var(--fs);line-height:1.55}
+/* Panels */
+#scrim{position:fixed;inset:0;background:#000a;z-index:20;display:none}
+#panel{position:fixed;top:0;bottom:0;z-index:21;display:none;flex-direction:column;background:var(--bg);overflow:hidden}
+#panel.right{right:0;width:min(86%,420px)}#panel.left{left:0;width:min(78%,360px)}
+.ph{background:#8e44ad;color:#fff;height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 10px 0;display:flex;align-items:center;justify-content:space-between;flex:none}
+.ph b{font-weight:500;font-size:18px}.ph button{background:none;border:0;color:#fff;font-size:17px;padding:8px;min-width:44px}
+.pb{overflow:auto;flex:1;padding-bottom:30px}
+.sh{padding:12px 14px 8px;color:var(--mut);font-size:17px;background:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);background:var(--navy)}
+.grid.g5{grid-template-columns:repeat(5,1fr)}
+.gb{background:none;border:0;border-bottom:1px solid #ffffff14;color:#fff;font-weight:600;font-size:16px;padding:17px 2px;border-radius:0}
+.gb.cur{color:#ff5c8a}
+.mi{display:block;width:100%;background:var(--navy);color:#fff;border:0;border-bottom:1px solid #ffffff1c;border-radius:0;font-size:19px;font-weight:600;padding:17px 12px;text-align:center}
+.mi.tg.on{color:#ff9fbd}
+.msec{padding:14px 14px 8px;color:var(--mut);font-size:17px;background:var(--bg)}
+.mpage{margin:0 -14px}
+.bk{margin-bottom:6px}
+#sheet{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom) + 66px);z-index:15;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;display:none;box-shadow:0 6px 24px #0005}
+.swb{width:34px;height:34px;border-radius:50%;padding:0;border:2px solid var(--line)}
+.swb.s1{background:#ffe27a}.swb.s2{background:#b9f0b0}.swb.s3{background:#b6dcff}.swb.s4{background:#ffc2dc}.swb.on{border-color:var(--fg)}
+mark{background:#ffe27a;color:#222}
+</style>
+</head>
+<body>
+<div id="bar"><button id="bm" aria-label="Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><button id="bs" aria-label="Suche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="10" r="6.2"/><path d="M15 15l6 6"/></svg></button><button id="bh" aria-label="Verlauf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3 3.6v4.8h4.8"/><path d="M12 7.6V12l3.2 2"/></svg></button><div id="ttl">Bibelstudium</div><button id="bb" aria-label="Bücher"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 5.2C6 3.8 9 4 12 6c3-2 6-2.2 9.5-.8v14C18 18 15 18.2 12 20.2 9 18.2 6 18 2.5 19.2z"/><path d="M12 6.5v13" stroke="#9b59b6" stroke-width="1.5"/></svg></button></div>
+<main id="main"></main>
+<div id="al" class="arr">‹</div><div id="ar" class="arr">›</div>
+<nav id="tabs"></nav>
+<div id="sheet"></div>
+<div id="scrim"></div><div id="panel"></div>
+<script>
+"use strict";
+
+/* ================= Bibelbücher ================= */
+const BKS=`Genesis|1. Mose|50|Gen,Gn,Ge
+Exodus|2. Mose|40|Exod,Ex
+Leviticus|3. Mose|27|Lev,Lv
+Numbers|4. Mose|36|Num,Nu
+Deuteronomy|5. Mose|34|Deut,Dt
+Joshua|Josua|24|Josh
+Judges|Richter|21|Judg
+Ruth|Rut|4|
+1 Samuel|1. Samuel|31|1 Sam
+2 Samuel|2. Samuel|24|2 Sam
+1 Kings|1. Könige|22|1 Kgs
+2 Kings|2. Könige|25|2 Kgs
+1 Chronicles|1. Chronik|29|1 Chr
+2 Chronicles|2. Chronik|36|2 Chr
+Ezra|Esra|10|
+Nehemiah|Nehemia|13|Neh
+Esther|Ester|10|Esth
+Job|Hiob|42|
+Psalms|Psalm|150|Psalm,Ps,Pss
+Proverbs|Sprüche|31|Prov,Spr
+Ecclesiastes|Prediger|12|Eccl,Eccles
+Song of Solomon|Hohelied|8|Song of Songs,Song,Cant
+Isaiah|Jesaja|66|Isa
+Jeremiah|Jeremia|52|Jer
+Lamentations|Klagelieder|5|Lam
+Ezekiel|Hesekiel|48|Ezek
+Daniel|Daniel|12|Dan
+Hosea|Hosea|14|Hos
+Joel|Joel|3|
+Amos|Amos|9|
+Obadiah|Obadja|1|Obad
+Jonah|Jona|4|
+Micah|Micha|7|Mic
+Nahum|Nahum|3|Nah
+Habakkuk|Habakuk|3|Hab
+Zephaniah|Zefanja|3|Zeph
+Haggai|Haggai|2|Hag
+Zechariah|Sacharja|14|Zech
+Malachi|Maleachi|4|Mal
+Matthew|Matthäus|28|Matt,Mt
+Mark|Markus|16|Mk
+Luke|Lukas|24|Lk
+John|Johannes|21|Jn
+Acts|Apostelgeschichte|28|Apg
+Romans|Römer|16|Rom
+1 Corinthians|1. Korinther|16|1 Cor,1 Kor
+2 Corinthians|2. Korinther|13|2 Cor,2 Kor
+Galatians|Galater|6|Gal
+Ephesians|Epheser|6|Eph
+Philippians|Philipper|4|Phil
+Colossians|Kolosser|4|Col,Kol
+1 Thessalonians|1. Thessalonicher|5|1 Thess
+2 Thessalonians|2. Thessalonicher|3|2 Thess
+1 Timothy|1. Timotheus|6|1 Tim
+2 Timothy|2. Timotheus|4|2 Tim
+Titus|Titus|3|
+Philemon|Philemon|1|Philem
+Hebrews|Hebräer|13|Heb
+James|Jakobus|5|Jas
+1 Peter|1. Petrus|5|1 Pet
+2 Peter|2. Petrus|3|2 Pet
+1 John|1. Johannes|5|1 Jn
+2 John|2. Johannes|1|2 Jn
+3 John|3. Johannes|1|3 Jn
+Jude|Judas|1|
+Revelation|Offenbarung|22|Rev,Offb`.split("\n").map(l=>{const[en,de,n,al]=l.split("|");return{en,de,n:+n,al:(al||"").split(",").filter(Boolean)}});
+const norm=s=>s.toLowerCase().replace(/[_\u00a0]+/g," ").replace(/\s+/g," ").trim();
+const ALIAS=[];BKS.forEach((b,i)=>{[b.en,b.de,...b.al].forEach(a=>ALIAS.push([norm(a),i]))});
+ALIAS.sort((a,b)=>b[0].length-a[0].length);
+function findBook(s,exact){s=norm(s).replace(/^(the )?(book|gospel) of (st\.? )?/,"").replace(/^(the )?(epistle|letter) (of paul )?(of|to) (the )?/,"");
+ for(const[a,i]of ALIAS){if(s===a)return i;if(!exact&&s.startsWith(a)&&!/[a-zäöüß]/.test(s[a.length]||" "))return i}return -1}
+const XRE=(()=>{const alts=[...new Set(ALIAS.map(a=>a[0]).filter(a=>a.length>2||/\d/.test(a)))].map(a=>a.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s"));
+ return new RegExp("(?<![A-Za-z0-9])("+alts.join("|")+")\\.?\\s+(\\d{1,3}):(\\d{1,3})(?![0-9])","gi")})();
+
+/* ================= Speicher ================= */
+let db=null;const mem={mods:[],ents:[],notes:[]};
+const R=r=>new Promise((a,b)=>{r.onsuccess=()=>a(r.result);r.onerror=()=>b(r.error)});
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open("bibelstudium2",1);
+ r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore("mods",{keyPath:"id"});
+  const e=d.createObjectStore("ents",{keyPath:"id"});e.createIndex("bc",["mod","book","chap"]);e.createIndex("mod","mod");
+  d.createObjectStore("notes",{keyPath:"id"})};
+ r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>res();r.onblocked=()=>res()}catch(e){res()}})}
+const st=(s,m="readonly")=>db.transaction(s,m).objectStore(s);
+async function allOf(s){return db?R(st(s).getAll()):[...mem[s]]}
+async function putOne(s,o){if(!db){const i=mem[s].findIndex(x=>x.id===o.id);if(i>=0)mem[s][i]=o;else mem[s].push(o);return}return R(st(s,"readwrite").put(o))}
+async function delOne(s,id){if(!db){mem[s]=mem[s].filter(x=>x.id!==id);return}return R(st(s,"readwrite").delete(id))}
+async function bulkEnts(arr){if(!db){for(const x of arr)mem.ents.push(x);return}
+ for(let i=0;i<arr.length;i+=150){await new Promise((ok,no)=>{const t=db.transaction("ents","readwrite"),s=t.objectStore("ents");arr.slice(i,i+150).forEach(x=>s.put(x));t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error||new Error("Speicher voll?"))})}}
+async function entsBC(mod,b,c){return db?R(st("ents").index("bc").getAll(IDBKeyRange.only([mod,b,c]))):mem.ents.filter(e=>e.mod===mod&&e.book===b&&e.chap===c)}
+async function eachEnt(mod,fn){if(!db){for(const e of mem.ents)if(e.mod===mod&&fn(e)===false)return;return}
+ await new Promise((ok,no)=>{const q=st("ents").index("mod").openCursor(IDBKeyRange.only(mod));q.onsuccess=()=>{const c=q.result;if(!c)return ok();if(fn(c.value)===false)return ok();c.continue()};q.onerror=()=>no(q.error)})}
+async function delMod(id){await delOne("mods",id);if(!db){mem.ents=mem.ents.filter(e=>e.mod!==id);return}
+ await new Promise(ok=>{const q=st("ents","readwrite").index("mod").openCursor(IDBKeyRange.only(id));q.onsuccess=()=>{const c=q.result;if(!c)return ok();c.delete();c.continue()};q.onerror=()=>ok()})}
+
+/* ================= ZIP ohne Bibliothek ================= */
+async function unzip(buf){
+ const dv=new DataView(buf),u8=new Uint8Array(buf);let e=u8.length-22;
+ while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error("Keine gültige EPUB-Datei");
+ const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};
+ for(let i=0;i<n;i++){const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+  files[new TextDecoder().decode(u8.subarray(p+46,p+46+nl))]={method,csize,off};p+=46+nl+el+cl}
+ return{get:async name=>{const f=files[name];if(!f)return null;const lo=f.off,s=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true),data=u8.subarray(s,s+f.csize);
+  if(f.method===0)return data;
+  return new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer())}}}
+const dec=b=>new TextDecoder().decode(b);
+const xmlP=s=>new DOMParser().parseFromString(s,"application/xml");
+const dirOf=p=>p.includes("/")?p.slice(0,p.lastIndexOf("/")+1):"";
+function res(base,rel){const o=[];for(const x of(base+decodeURIComponent(rel.split("#")[0])).split("/")){if(x==="..")o.pop();else if(x&&x!==".")o.push(x)}return o.join("/")}
+const tick=()=>new Promise(r=>setTimeout(r,0));
+
+/* ================= Import ================= */
+function cleanDoc(d){
+ d.querySelectorAll("script,style,link,meta,iframe,object,img,svg,image,title").forEach(x=>x.remove());
+ d.querySelectorAll("a").forEach(a=>{const s=d.createElement("span");s.innerHTML=a.innerHTML;a.replaceWith(s)});
+ d.querySelectorAll("*").forEach(el=>{for(const a of[...el.attributes])if(a.name!=="class")el.removeAttribute(a.name)});return d.body}
+const plain=h=>h.replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#8211;|&#x2013;/g,"–").replace(/\s+/g," ").trim();
+const rawTitle=raw=>{const m=raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i);return m?plain(m[1]):""};
+const SEC=/^(\d+):(\d+)(?:\s*[–\-]\s*(?:(\d+):)?(\d+))?\s*(.*)$/;
+const OVR=/^(.*?)\s*(\d+):\s*overview\s*$/i;
+
+async function importEpub(file,type,msg){
+ const z=await unzip(await file.arrayBuffer());
+ const cont=xmlP(dec(await z.get("META-INF/container.xml")));
+ const opfPath=cont.querySelector("rootfile").getAttribute("full-path"),base=dirOf(opfPath);
+ const opf=xmlP(dec(await z.get(opfPath)));
+ const title=((opf.getElementsByTagNameNS("*","title")[0]||{}).textContent||file.name.replace(/\.epub$/i,"")).trim();
+ const man={};opf.querySelectorAll("manifest > item").forEach(i=>man[i.getAttribute("id")]=i);
+ const spine=[...opf.querySelectorAll("spine > itemref")].map(r=>man[r.getAttribute("idref")]).filter(i=>i&&/html/.test(i.getAttribute("media-type")||"")).map(i=>res(base,i.getAttribute("href")));
+ const docs=[];
+ for(let i=0;i<spine.length;i++){if(i%20===0){msg(`Lese Datei ${i+1}/${spine.length} …`);await tick()}
+  const r=await z.get(spine[i]);if(r)docs.push({path:spine[i],raw:dec(r)})}
+ if(!docs.length)throw new Error("Keine lesbaren Inhalte");
+ // Typ erkennen
+ if(type==="auto"){const hit=docs.filter(d=>SEC.test(rawTitle(d.raw))||OVR.test(rawTitle(d.raw))).length;type=hit>=Math.max(5,docs.length*.2)?"comm":"other"}
+ const id="m"+Date.now()+Math.random().toString(36).slice(2,5);
+ const mod={id,title,type,added:Date.now(),count:0};let ents=[],n=0;
+ const E=o=>{o.id=id+"|"+(n++);o.mod=id;ents.push(o)};
+ let lastBook=-1,B=-1,C=0,lastV=0;let sn=0;const otherCh=[];
+ for(let i=0;i<docs.length;i++){const{path,raw}=docs[i];if(i%15===0){msg(`Verarbeite ${i+1}/${docs.length} …`);await tick()}
+  const t=rawTitle(raw);
+  if(type==="comm"){
+   const dir=(path.split("/").slice(-2,-1)[0]||"");let book=findBook(dir.replace(/_/g," "),true);
+   const ov=t.match(OVR);if(book<0&&ov)book=findBook(ov[1],true);if(book<0)continue;
+   const d=new DOMParser().parseFromString(raw,"text/html");const body=cleanDoc(d);
+   if(ov)E({kind:"c",book,chap:+ov[2],v1:0,ec:+ov[2],ev:0,title:"Überblick Kapitel "+ov[2],html:body.innerHTML});
+   else{const m=t.match(SEC);if(!m)continue;const c=+m[1],v1=+m[2],ec=m[3]?+m[3]:c,ev=m[4]?+m[4]:v1;
+    E({kind:"c",book,chap:c,v1,ec,ev,title:m[5]||"",html:body.innerHTML})}
+  }else if(type==="bible"){
+   const d=new DOMParser().parseFromString(raw,"text/html");const body=d.body;if(!body)continue;
+   const heads=[...body.querySelectorAll("h1,h2,h3,h4")].map(h=>h.textContent.trim());heads.unshift(t);
+   let cn=0;for(const h of heads){const b2=findBook(h);if(b2>=0&&b2!==B){B=b2;C=0;lastV=0}
+    if(!cn&&(findBook(h)>=0||/(chapter|kapitel|psalm)/i.test(h))){const m=h.match(/(\d{1,3})\s*$/)||h.match(/(\d{1,3})/);if(m)cn=+m[1]}}
+   if(B<0)B=findBook(path.split("/").pop().replace(/[._\-]/g," "));if(B<0)continue;
+   body.querySelectorAll("h1,h2,h3,h4,h5,h6,script,style").forEach(x=>x.remove());
+   let h=body.innerHTML.replace(/<sup[^>]*>\s*(\d{1,3})\s*<\/sup>/gi,"\u27e6$1\u27e7")
+    .replace(/<(span|a|b|strong|em)[^>]*class="[^"]*(?:verse|vers|vnum|vn|versenum|\bv\b)[^"]*"[^>]*>\s*(\d{1,3})\s*<\/\1>/gi,"\u27e6$2\u27e7")
+    .replace(/(<(?:p|li|div|br)[^>]*>)\s*(\d{1,3})[\s.\u00a0]+(?=\S)/gi,"$1\u27e6$2\u27e7");
+   const parts=h.split(/\u27e6(\d{1,3})\u27e7/);const cur={};
+   for(let k=1;k<parts.length;k+=2){const v=+parts[k];let txt=parts[k+1].replace(/<(?!\/?(?:em|i|b|strong)\b)[^>]*>/gi," ").replace(/&nbsp;/g," ").replace(/\s+/g," ").trim();
+    if(v===1&&(lastV>=1||C===0)){C=(cn&&cn!==C)?cn:C+1;}else if(C===0)C=cn||1;
+    lastV=v;const key=B+"|"+C;(cur[key]??=[]).push([v,txt])}
+   for(const key in cur){const[b,c]=key.split("|").map(Number);E({kind:"b",book:b,chap:c,verses:cur[key]});for(const[,tx]of cur[key])sn+=(tx.match(/\b[GH]\d{1,4}\b/g)||[]).length}
+  }else if(type==="dict"){
+   const d=new DOMParser().parseFromString(raw,"text/html");const body=cleanDoc(d);
+   const push=(key,html)=>{key=key.replace(/\s+/g," ").trim();if(!key||plain(html).length<2)return;const m=key.match(/\b([GHgh])\s?0*(\d{1,4})\b/);E({kind:"d",book:-1,chap:0,key,keyl:key.toLowerCase(),num:m?m[1].toUpperCase()+ +m[2]:"",html})};
+   const dts=body.querySelectorAll("dt");
+   if(dts.length>1){dts.forEach(dt=>{let h="",s=dt.nextElementSibling;while(s&&s.tagName!=="DT"){h+=s.outerHTML;s=s.nextElementSibling}push(dt.textContent,h)})}
+   else{let key=t,h="",any=false;const flush=()=>{if(any||h)push(key,h)};
+    for(const el of body.children){if(/^H[1-4]$/.test(el.tagName)){flush();key=el.textContent;h="";any=true}else h+=el.outerHTML}
+    flush()}
+  }else{ // other
+   const d=new DOMParser().parseFromString(raw,"text/html");const body=cleanDoc(d);const hh=body.querySelector("h1,h2,h3");
+   const html=body.innerHTML;if(plain(html).length<2)continue;otherCh.push({title:t||(hh&&hh.textContent.trim())||"Abschnitt "+(otherCh.length+1),html})}
+  if(ents.length>=600){await bulkEnts(ents);mod.count+=ents.length;ents=[]}
+ }
+ if(type==="other"){if(!otherCh.length)throw new Error("Keine Kapitel gefunden");mod.chapters=otherCh;mod.count=otherCh.length}
+ else{await bulkEnts(ents);mod.count+=ents.length}
+ if(type!=="other"&&mod.count===0)throw new Error("Nichts erkannt – falscher Typ gewählt? (Typ Sonstiges liest jede EPUB)");
+ if(type==="bible")mod.strongs=sn>=100;
+ await putOne("mods",mod);return mod}
+
+/* ================= Zustand ================= */
+let MODS=[],S={tab:"bible",sub:"",b:42,c:1,v:1,sel:{},sn:true,theme:"sepia",fs:19,hist:[],cm:null};
+try{Object.assign(S,JSON.parse(localStorage.getItem("bs_state")||"{}"))}catch(e){}
+S.sub="";S.reader=null;if(["search","hist","reader"].includes(S.tab))S.tab="bible";
+const save=()=>{try{localStorage.setItem("bs_state",JSON.stringify({tab:S.tab,b:S.b,c:S.c,v:S.v,sel:S.sel,sn:S.sn,theme:S.theme,fs:S.fs,hist:S.hist,cm:S.cm}))}catch(e){}};
+const $=s=>document.querySelector(s),main=$("#main");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mods=t=>MODS.filter(m=>m.type===t);
+const AB="1Mo,2Mo,3Mo,4Mo,5Mo,Jos,Ri,Rut,1Sam,2Sam,1Kö,2Kö,1Chr,2Chr,Esr,Neh,Est,Hi,Ps,Spr,Pred,Hld,Jes,Jer,Klgl,Hes,Dan,Hos,Joel,Am,Ob,Jon,Mi,Nah,Hab,Zef,Hag,Sach,Mal,Mt,Mk,Lk,Joh,Apg,Röm,1Kor,2Kor,Gal,Eph,Phil,Kol,1Th,2Th,1Tim,2Tim,Tit,Phm,Hebr,Jak,1Petr,2Petr,1Joh,2Joh,3Joh,Jud,Offb".split(",");
+const refName=(b,c,v)=>BKS[b].de+" "+c+(v?","+v:"");
+const refShort=(b,c,v)=>AB[b]+" "+c+(v?":"+v:"");
+const tag=/\[[GH]\d+\]/g;
+let vmax=176;
+const IC={
+ menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+ search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="10" r="6.2"/><path d="M15 15l6 6"/></svg>',
+ hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3 3.6v4.8h4.8"/><path d="M12 7.6V12l3.2 2"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 5.2C6 3.8 9 4 12 6c3-2 6-2.2 9.500-.8v14C18 18 15 18.200 12 20.200 9 18.200 6 18 2.500 19.200z"/><path d="M12 6.500v13" stroke="#9b59b6" stroke-width="1.500"/></svg>'};
+const TI={
+ bible:'<svg viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" rx="7" fill="currentColor"/><path d="M14.500 8h11v17l-5.500-4.500L14.500 25z" fill="#fff"/></svg>',
+ comm:'<svg viewBox="0 0 40 40"><rect x="10" y="10" width="26" height="26" rx="5" fill="currentColor"/><path d="M5 30V8a3 3 0 0 1 3-3h22" fill="none" stroke="currentColor" stroke-width="3.200" stroke-linecap="round"/><text x="23" y="30" text-anchor="middle" font-size="19" font-weight="700" font-family="-apple-system,sans-serif" fill="#fff">K</text></svg>',
+ ref:'<svg viewBox="0 0 40 40"><rect x="10" y="10" width="26" height="26" rx="5" fill="currentColor"/><path d="M5 30V8a3 3 0 0 1 3-3h22" fill="none" stroke="currentColor" stroke-width="3.200" stroke-linecap="round"/><text x="23" y="30" text-anchor="middle" font-size="19" font-weight="700" font-family="-apple-system,sans-serif" fill="#fff">R</text></svg>',
+ dict:'<svg viewBox="0 0 40 40"><rect x="10" y="10" width="26" height="26" rx="5" fill="currentColor"/><path d="M5 30V8a3 3 0 0 1 3-3h22" fill="none" stroke="currentColor" stroke-width="3.200" stroke-linecap="round"/><text x="23" y="30" text-anchor="middle" font-size="19" font-weight="700" font-family="-apple-system,sans-serif" fill="#fff">L</text></svg>',
+ more:'<svg viewBox="0 0 40 40" fill="currentColor"><circle cx="8" cy="20" r="3.200"/><circle cx="20" cy="20" r="3.200"/><circle cx="32" cy="20" r="3.200"/></svg>'};
+const TABS=[["bible","Bibel"],["comm","Kommentar"],["ref","Nachschlagen"],["dict","Lexikon"],["more","Mehr"]];
+
+/* ================= Rahmen ================= */
+function applyTheme(){document.documentElement.dataset.theme=S.theme;document.documentElement.style.setProperty("--fs",S.fs+"px")}
+const activeBibles=()=>{const bs=mods("bible");const a=bs.filter(m=>S.sel[m.id]===true);return a.length?a:bs.slice(0,1)};
+function drawBar(){const t=S.tab;let ttl="Bibelstudium";
+ if(t==="bible"){const a=activeBibles();ttl=a.length?a.map(m=>m.short||m.title).join(" · "):"Bibel"}
+ else if(t==="comm"){const c=mods("comm").find(m=>m.id===S.cm)||mods("comm")[0];ttl=c?c.title:"Kommentar"}
+ else ttl={ref:"Nachschlagewerke",dict:"Lexikon",more:"Menü",search:"Suche",hist:"Verlauf",reader:"Lesen"}[t]||ttl;
+ $("#ttl").textContent=ttl;const nav=(t==="bible"||t==="comm");$("#bb").style.visibility=nav?"visible":"hidden";
+ $("#al").style.display=$("#ar").style.display=nav?"flex":"none"}
+function drawTabs(){const on=S.tab==="reader"?"ref":S.tab;
+ $("#tabs").innerHTML=TABS.map(([k,l])=>`<button data-t="${k}" class="${on===k?"on":""}">${TI[k]}<span>${l}</span></button>`).join("");
+ $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;S.sub="";S.reader=null;save();drawAll()})}
+function drawAll(){applyTheme();hideSheet();drawBar();drawTabs();draw()}
+async function draw(keep){const y=scrollY;
+ const f={bible:vBible,comm:vComm,ref:vRef,dict:vDict,more:vMore,search:vSearch,hist:vHist,reader:vReader}[S.tab];
+ await f();linkify(main);if(keep)scrollTo(0,y);else if(S.tab!=="comm"&&!S.autoScroll)scrollTo(0,0)}
+function hideSheet(){$("#sheet").style.display="none"}
+function empty(t,d,btn,fn){main.innerHTML=`<div class="card"><b>${t}</b><p class="mut">${d}</p>${btn?`<button class="p" id="eb">${btn}</button>`:""}</div>`;if(btn)$("#eb").onclick=fn}
+function goRef(b,c,v,tab){S.b=b;S.c=c;S.v=v;if(tab)S.tab=tab;S.sub="";S.reader=null;
+ const h=S.hist;if(!h.length||h[0].b!==b||h[0].c!==c){h.unshift({b,c,v});if(h.length>40)h.length=40}save();drawAll()}
+function step(d){let b=S.b,c=S.c+d;if(c<1){if(b===0)return;b--;c=BKS[b].n}else if(c>BKS[b].n){if(b===65)return;b++;c=1}S.autoScroll=false;goRef(b,c,1)}
+function linkify(root){
+ const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentNode.closest("a,textarea,input,summary,button")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+ const nodes=[];let n;while(n=w.nextNode())if(/\d:\d/.test(n.data))nodes.push(n);
+ for(const t of nodes){XRE.lastIndex=0;const s=t.data;let m,last=0,html="",hit=false;
+  while(m=XRE.exec(s)){const b=findBook(m[1],true);if(b<0)continue;hit=true;html+=esc(s.slice(last,m.index))+`<a class="xref" data-b="${b}" data-c="${m[2]}" data-v="${m[3]}">${esc(m[0])}</a>`;last=m.index+m[0].length}
+  if(hit){const sp=document.createElement("span");sp.innerHTML=html+esc(s.slice(last));t.replaceWith(sp)}}
+ root.querySelectorAll("a.xref").forEach(a=>a.onclick=e=>{e.preventDefault();e.stopPropagation();S.autoScroll=true;goRef(+a.dataset.b,+a.dataset.c,+a.dataset.v,mods("bible").length?"bible":S.tab)});
+ root.querySelectorAll("a.sn").forEach(a=>a.onclick=e=>{e.preventDefault();e.stopPropagation();S.dq=a.dataset.n;S.tab="dict";S.sub="";save();drawAll()})}
+
+/* ================= Panels (Menü, Bücher, Auswahl) ================= */
+function openPanel(side,html){const p=$("#panel");p.className=side;p.innerHTML=html;p.style.display="flex";$("#scrim").style.display="block";return p}
+function closePanel(){$("#panel").style.display="none";$("#scrim").style.display="none"}
+function bookPanel(tab){
+ const sec=(t,a,z)=>{let o=`<div class="sh">${t}</div><div class="grid">`;for(let i=a;i<z;i++)o+=`<button class="gb${i===S.b?" cur":""}" data-b="${i}">${AB[i]}</button>`;return o+"</div>"};
+ const p=openPanel("right",`<div class="ph"><span></span><b>Bücher</b><button id="pc">Abbrechen</button></div><div class="pb">${sec("Altes Testament",0,39)}${sec("Neues Testament",39,66)}</div>`);
+ $("#pc").onclick=closePanel;
+ p.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{const bi=+b.dataset.b;
+  let g="";for(let i=1;i<=BKS[bi].n;i++)g+=`<button class="gb${bi===S.b&&i===S.c?" cur":""}" data-c="${i}">${i}</button>`;
+  p.innerHTML=`<div class="ph"><button id="pb2">‹</button><b>${esc(BKS[bi].de)}</b><button id="pc">Abbrechen</button></div><div class="pb"><div class="sh">Kapitel</div><div class="grid g5">${g}</div></div>`;
+  $("#pc").onclick=closePanel;$("#pb2").onclick=()=>bookPanel(tab);
+  p.querySelectorAll("[data-c]").forEach(c=>c.onclick=()=>{closePanel();S.autoScroll=false;goRef(bi,+c.dataset.c,1)})})}
+function menuHTML(){const it=(k,l)=>`<button class="mi" data-go="${k}">${l}</button>`;
+ return `<div class="msec">Bibel</div>${it("bm","Lesezeichen")}${it("hl","Markierte Verse")}${it("notes","Studiennotizen")}
+ <div class="msec">Optionen</div>${it("disp","Anzeige-Einstellungen")}${it("cmp","Bibel-Vergleich (parallel)")}
+ <div class="msec">Download</div>${it("dl:bible","Bibeln")}${it("dl:comm","Kommentare")}${it("dl:dict","Lexika &amp; Wörterbücher")}${it("dl:other","Nachschlagewerke")}
+ <div class="msec">Allgemein</div>${it("inst","Installiert")}${it("imp","Import (EPUB)")}${it("bak","Sicherung")}
+ <div class="msec">Hilfe</div>${it("help","Anleitung")}`}
+function bindMenu(root){root.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{closePanel();const g=b.dataset.go;
+ if(g==="cmp"){S.tab="bible";S.sub="";save();drawAll();return pickModules()}
+ S.tab="more";S.sub=g;save();drawAll()})}
+function pickModules(){const bs=mods("bible");if(!bs.length)return;const act=new Set(activeBibles().map(m=>m.id));
+ const p=openPanel("right",`<div class="ph"><span></span><b>Bibeln anzeigen</b><button id="pc">Fertig</button></div><div class="pb">${bs.map(m=>`<button class="mi tg${act.has(m.id)?" on":""}" data-m="${m.id}">${act.has(m.id)?"✓ ":""}${esc(m.title)}</button>`).join("")}<p class="mut" style="padding:10px">Mehrere wählen = Verse nebeneinander lesen.</p></div>`);
+ const done=()=>{closePanel();drawAll()};$("#pc").onclick=done;
+ p.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{if(act.has(b.dataset.m))act.delete(b.dataset.m);else act.add(b.dataset.m);if(!act.size)act.add(b.dataset.m);S.sel={};act.forEach(i=>S.sel[i]=true);save();pickModules()})}
+function pickComm(){const cs=mods("comm");if(cs.length<2)return;const p=openPanel("right",`<div class="ph"><span></span><b>Kommentar</b><button id="pc">Schließen</button></div><div class="pb">${cs.map(m=>`<button class="mi tg${m.id===S.cm?" on":""}" data-m="${m.id}">${esc(m.title)}</button>`).join("")}</div>`);
+ $("#pc").onclick=closePanel;p.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{S.cm=b.dataset.m;save();closePanel();drawAll()})}
+
+/* ================= Bibel ================= */
+const marksFor=async(b,c)=>(await allOf("notes")).filter(n=>n.b===b&&n.c===c);
+async function vBible(){
+ const bs=mods("bible");
+ if(!bs.length)return empty("Noch keine Bibel","Lade im Menü unter Download → Bibeln eine Bibel herunter (z. B. KJV mit Strong-Nummern oder Schlachter).","Bibeln herunterladen",()=>{S.tab="more";S.sub="dl:bible";drawAll()});
+ const act=activeBibles();
+ const per=await Promise.all(act.map(async m=>({m,e:(await entsBC(m.id,S.b,S.c))[0]})));
+ const marks=await marksFor(S.b,S.c);const hl={},nt=new Set(),bm=new Set();
+ marks.forEach(x=>{if(x.kind==="hl")hl[x.v]=x.col||1;else if(x.kind==="note")nt.add(x.v);else if(x.kind==="bm")bm.add(x.v)});
+ const maxN=Math.max(0,...per.flatMap(p=>p.e?p.e.verses.map(v=>v[0]):[]));if(maxN)vmax=maxN;
+ let h=`<h3 class="ch">${esc(BKS[S.b].de)} ${S.c}</h3>`;
+ if(!per.some(p=>p.e))h+=`<p class="mut" style="text-align:center">Dieses Kapitel ist in dieser Bibel nicht vorhanden.</p>`;
+ const fmt=(p,x)=>{let t=esc(x[1]).replace(/&lt;(\/?)(em|i|b|strong)&gt;/g,"<$1$2>");
+  t=p.m.strongs?t.replace(/\[?\b([GH]\d{1,4})\b\]?/g,S.sn===false?"":'<a class="sn" data-n="$1">$1</a>'):t;return t};
+ for(let v=1;v<=maxN;v++){
+  const rows=per.map(p=>{const x=p.e&&p.e.verses.find(a=>a[0]===v);return x?{p,x}:null}).filter(Boolean);if(!rows.length)continue;
+  const mk=(bm.has(v)?"★":"")+(nt.has(v)?"✎":"");
+  h+=`<div class="vp${v===S.v?" sel":""}" data-v="${v}"><a class="vr">${esc(refShort(S.b,S.c,v))}</a>${mk?`<span class="mk">${mk}</span>`:""} `+
+   (rows.length===1&&per.length===1?`<span class="tx${hl[v]?" h"+hl[v]:""}">${fmt(rows[0].p,rows[0].x)}</span>`:rows.map(r=>`<div class="ml"><span class="tl">${esc(r.p.m.short||r.p.m.title.slice(0,5))}</span> <span class="tx${hl[v]?" h"+hl[v]:""}">${fmt(r.p,r.x)}</span></div>`).join(""))+`</div>`}
+ main.innerHTML=h;
+ main.querySelectorAll(".vp").forEach(el=>el.onclick=e=>{if(e.target.closest("a.sn"))return;const v=+el.dataset.v;S.v=v;save();
+  main.querySelectorAll(".vp.sel").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");verseSheet(v,hl[v]||0,bm.has(v),per)});
+ const cv=main.querySelector(".vp.sel");if(cv&&S.autoScroll){cv.scrollIntoView({block:"center"});S.autoScroll=false}}
+function verseSheet(v,col,isBm,per){const s=$("#sheet");s.style.display="block";
+ const sw=[1,2,3,4].map(i=>`<button class="swb s${i}${col===i?" on":""}" data-col="${i}"></button>`).join("");
+ s.innerHTML=`<div class="mut" style="margin-bottom:6px"><b>${esc(refName(S.b,S.c,v))}</b></div><div class="row">${sw}<button id="sN">Notiz</button><button id="sB">${isBm?"★ weg":"☆ Lesezeichen"}</button><button id="sC">Kopieren</button><button id="sK">Kommentar</button><button id="sX">✕</button></div>`;
+ s.querySelectorAll("[data-col]").forEach(b=>b.onclick=async()=>{const id=`h:${S.b}:${S.c}:${v}`,c=+b.dataset.col;if(col===c)await delOne("notes",id);else await putOne("notes",{id,kind:"hl",b:S.b,c:S.c,v,col:c,t:Date.now()});draw(true)});
+ $("#sB").onclick=async()=>{const id=`b:${S.b}:${S.c}:${v}`;if(isBm)await delOne("notes",id);else await putOne("notes",{id,kind:"bm",b:S.b,c:S.c,v,t:Date.now()});draw(true)};
+ $("#sC").onclick=async()=>{const p=per[0],x=p&&p.e&&p.e.verses.find(a=>a[0]===v);const t=refName(S.b,S.c,v)+" – "+(x?x[1].replace(tag,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim():"")+" ("+(p?p.m.short||p.m.title:"")+")";
+  try{await navigator.clipboard.writeText(t);$("#sC").textContent="✓ kopiert"}catch(e){$("#sC").textContent="nicht möglich"}};
+ $("#sK").onclick=()=>{if(!mods("comm").length){$("#sK").textContent="kein Kommentar";return}S.tab="comm";save();drawAll()};
+ $("#sX").onclick=()=>{hideSheet();main.querySelectorAll(".vp.sel").forEach(x=>x.classList.remove("sel"))};
+ $("#sN").onclick=()=>{s.innerHTML=`<div class="mut"><b>Notiz zu ${esc(refName(S.b,S.c,v))}</b></div><textarea id="nt" rows="3" placeholder="Deine Notiz …"></textarea><div class="row" style="margin-top:8px"><button class="p" id="ns">Speichern</button><button id="nc">Abbrechen</button></div>`;$("#nt").focus();
+  $("#nc").onclick=hideSheet;$("#ns").onclick=async()=>{const text=$("#nt").value.trim();if(text)await putOne("notes",{id:"n"+Date.now(),kind:"note",b:S.b,c:S.c,v,text,t:Date.now()});hideSheet();draw(true)}}}
+
+/* ================= Kommentar ================= */
+const covers=e=>e.v1>0&&e.chap<=S.c&&(S.c>e.chap||S.v>=e.v1)&&(S.c<e.ec||S.v<=e.ev);
+async function vComm(){
+ const cs=mods("comm");
+ if(!cs.length)return empty("Noch kein Kommentar","Im Menü unter Import (EPUB) einen Kommentar hinzufügen. Er folgt dann automatisch dem gewählten Vers.","Import öffnen",()=>{S.tab="more";S.sub="imp";drawAll()});
+ const sel=cs.find(m=>m.id===S.cm)||cs[0];S.cm=sel.id;
+ let es=await entsBC(sel.id,S.b,S.c);if(S.c>1)es=es.concat((await entsBC(sel.id,S.b,S.c-1)).filter(e=>e.ec>=S.c));
+ es.sort((a,b)=>a.chap-b.chap||a.v1-b.v1);
+ const rng=e=>e.v1?(e.chap+":"+e.v1+(e.ev!==e.v1||e.ec!==e.chap?"–"+(e.ec!==e.chap?e.ec+":":"")+e.ev:"")):"";
+ let h=`<h3 class="ch">${esc(BKS[S.b].de)} ${S.c}${S.v?","+S.v:""}</h3>`;
+ if(!es.length)h+=`<p class="mut" style="text-align:center">Für dieses Kapitel gibt es in diesem Kommentar keinen Eintrag.</p>`;
+ let first=true;const anyAct=es.some(covers);
+ for(const e of es){const a=covers(e);h+=`<details class="${a?"act":""}" ${a||(e.v1===0&&!anyAct)?"open":""} ${a&&first?'id="first"':""}><summary><span class="r">${rng(e)||"Überblick"}</span>${esc(e.v1?e.title:"")}</summary><div class="cm">${e.html}</div></details>`;if(a)first=false}
+ main.innerHTML=h;const f=$("#first");if(f)setTimeout(()=>f.scrollIntoView({block:"start"}),30)}
+
+/* ================= Nachschlagewerke (Sonstiges) ================= */
+async function vRef(){const rs=mods("other");
+ if(!rs.length)return empty("Keine Nachschlagewerke","Andere EPUB-Bücher (Andachten, Studienbücher …) kannst du im Menü unter Import hinzufügen.","Import öffnen",()=>{S.tab="more";S.sub="imp";drawAll()});
+ main.innerHTML=rs.map(m=>`<div class="card"><b>${esc(m.title)}</b><div class="mut">${m.count} Kapitel</div><div style="margin-top:6px"><button class="p" data-r="${m.id}">Lesen</button></div></div>`).join("");
+ main.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{S.reader={id:b.dataset.r,i:0};S.tab="reader";drawAll()})}
+async function vReader(){const m=MODS.find(x=>x.id===S.reader.id);if(!m){S.tab="ref";return vRef()}
+ const i=S.reader.i,c=m.chapters[i];
+ main.innerHTML=`<div class="row" style="justify-content:space-between"><button id="rb">‹ Liste</button><button id="rl">Inhalt</button></div><div class="mut" style="margin-top:6px">${esc(m.title)} · ${i+1}/${m.chapters.length}</div><h3 class="ch">${esc(c.title)}</h3><div class="cm">${c.html}</div>
+ <div class="row" style="justify-content:space-between;margin-top:12px"><button id="rp">‹ Zurück</button><button id="rn">Weiter ›</button></div>`;
+ $("#rb").onclick=()=>{S.tab="ref";S.reader=null;drawAll()};$("#rp").onclick=()=>{if(i>0){S.reader.i--;draw()}};$("#rn").onclick=()=>{if(i<m.chapters.length-1){S.reader.i++;draw()}};
+ $("#rl").onclick=()=>{main.innerHTML=`<button id="rb2">‹ Zurück zum Text</button>`+m.chapters.map((x,k)=>`<div class="item" data-k="${k}">${esc(x.title)}</div>`).join("");$("#rb2").onclick=()=>draw();main.querySelectorAll("[data-k]").forEach(el=>el.onclick=()=>{S.reader.i=+el.dataset.k;draw()})}}
+
+/* ================= Lexikon ================= */
+async function vDict(){
+ const ds=mods("dict");
+ if(!ds.length)return empty("Noch kein Lexikon","Lade im Menü unter Download → Lexika das Strong's-Wörterbuch herunter.","Lexika herunterladen",()=>{S.tab="more";S.sub="dl:dict";drawAll()});
+ main.innerHTML=`<input type="search" id="dq" placeholder="Wort oder Nummer (z. B. G25, agape, love) …" value="${esc(S.dq||"")}"><div id="dr"></div>`;
+ const run=async()=>{const q=$("#dq").value.trim().toLowerCase();S.dq=$("#dq").value.trim();const out=$("#dr");if(!q){out.innerHTML='<p class="mut">Tippe einen Begriff oder eine Strong-Nummer ein.</p>';return}
+  const hits=[];const nq=q.replace(/^([gh])\s?0*(\d+)$/,(m,a,b)=>a.toUpperCase()+b);
+  for(const m of ds){await eachEnt(m.id,e=>{if(e.num&&e.num===nq||e.keyl.includes(q))hits.push(e);return hits.length<60})}
+  hits.sort((a,b)=>(b.num===nq)-(a.num===nq)||a.keyl.length-b.keyl.length);
+  out.innerHTML=hits.length?hits.map((e,i)=>`<details class="card" ${i===0&&(e.num===nq||hits.length<4)?"open":""}><summary>${esc(e.key)}</summary><div class="dk">${e.html}</div></details>`).join(""):'<p class="mut">Keine Treffer.</p>';linkify(out);
+  out.querySelectorAll("[data-conc]").forEach(b=>b.onclick=()=>concordance(b.dataset.conc))};
+ let t;$("#dq").oninput=()=>{clearTimeout(t);t=setTimeout(run,250)};run()}
+async function concordance(num){
+ const bs=mods("bible").filter(m=>m.strongs);const out=$("#dr");
+ if(!bs.length){out.innerHTML='<p class="mut">Dafür braucht es eine Bibel mit Strong-Nummern (Menü → Download → Bibeln → KJV + Strong\'s).</p>';return}
+ out.innerHTML='<p class="mut">Suche …</p>';const m=bs[0],tg="["+num+"]",hits=[];let total=0;
+ await eachEnt(m.id,e=>{for(const[v,t]of e.verses)if(t.includes(tg)){total++;if(hits.length<150)hits.push({b:e.book,c:e.chap,v,t})}});
+ hits.sort((a,b)=>a.b-b.b||a.c-b.c||a.v-b.v);
+ out.innerHTML=`<button id="cb">‹ zurück</button> <b>${num}</b> <span class="mut">· ${total} Verse in ${esc(m.short||m.title)}${total>hits.length?" (erste "+hits.length+")":""}</span>`+hits.map((h,i)=>{
+  const t=esc(h.t.split(tg).join("\u0001").replace(tag,"")).replace(/([^\s\u0001]*)\u0001/,"<mark>$1</mark>").replace(/\u0001/g,"");
+  return`<div class="item" data-i="${i}"><b>${esc(refShort(h.b,h.c,h.v))}</b><div class="mut">${t}</div></div>`}).join("");
+ $("#cb").onclick=()=>$("#dq").oninput();
+ out.querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const h=hits[el.dataset.i];S.autoScroll=true;goRef(h.b,h.c,h.v,"bible")})}
+
+/* ================= Suche & Verlauf ================= */
+async function vSearch(){main.innerHTML=`<input type="search" id="gq" placeholder="In Bibeln &amp; Kommentaren suchen …"><div id="gr"></div>`;const gq=$("#gq");gq.focus();
+ let t;gq.oninput=()=>{clearTimeout(t);t=setTimeout(()=>gsearch(gq.value.trim()),300)};if(S.gq){gq.value=S.gq;gsearch(S.gq)}}
+async function gsearch(q){S.gq=q;const out=$("#gr");if(q.length<3){out.innerHTML="";return}out.innerHTML='<p class="mut">Suche …</p>';
+ const ql=q.toLowerCase(),hits=[];
+ for(const m of MODS.filter(m=>m.type==="bible"||m.type==="comm")){await eachEnt(m.id,e=>{
+  if(e.kind==="b"){for(const[v,tx0]of e.verses){const tx=tx0.replace(tag,"");if(tx.toLowerCase().includes(ql))hits.push({m,b:e.book,c:e.chap,v,tx,tab:"bible"})}}
+  else if(e.html.toLowerCase().includes(ql)){hits.push({m,b:e.book,c:e.chap,v:e.v1||1,tx:plain(e.html),tab:"comm"})}
+  return hits.length<80})}
+ out.innerHTML=hits.length?hits.map((h,i)=>{const k=h.tx.toLowerCase().indexOf(ql),s=Math.max(0,k-40);return`<div class="item" data-i="${i}"><b>${esc(refName(h.b,h.c,h.v))}</b> <span class="mut">${esc(h.m.short||h.m.title.slice(0,18))}</span><div class="mut">…${esc(h.tx.slice(s,k))}<mark>${esc(h.tx.slice(k,k+q.length))}</mark>${esc(h.tx.slice(k+q.length,k+q.length+80))}…</div></div>`}).join(""):'<p class="mut">Keine Treffer.</p>';
+ out.querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const h=hits[el.dataset.i];if(h.tab==="comm")S.cm=h.m.id;S.autoScroll=true;goRef(h.b,h.c,h.v,h.tab)})}
+async function vHist(){main.innerHTML=S.hist.length?S.hist.map((h,i)=>`<div class="item" data-i="${i}"><b>${esc(refName(h.b,h.c))}</b></div>`).join(""):'<p class="mut">Noch kein Verlauf.</p>';
+ main.querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const h=S.hist[el.dataset.i];S.autoScroll=false;goRef(h.b,h.c,h.v||1,"bible")})}
+
+/* ================= Menü-Seiten ================= */
+const CAT=[
+ {file:"kjv-strongs.json",type:"bible",title:"KJV + Strong's",short:"KJV",desc:"King James Version (1769) mit Strong's-Nummern an jedem Wort. Englisch.",mb:6.4},
+ {file:"strongs.json",type:"dict",title:"Strong's Wörterbuch",short:"Strong",desc:"Griechisch (5.523) und Hebräisch (8.674): Grundwort, Aussprache, Bedeutung, Konkordanz.",mb:2.3},
+ {file:"schlachter1951.json",type:"bible",title:"Schlachter 1951",short:"Schl",desc:"Deutsche Bibel (gemeinfrei).",mb:4.2},
+ {file:"elberfelder1905.json",type:"bible",title:"Elberfelder 1905",short:"Elb",desc:"Deutsche Bibel, unrevidiert (gemeinfrei).",mb:4.3},
+ {file:"luther1545.json",type:"bible",title:"Luther 1545",short:"Lut",desc:"Deutsch, moderne Rechtschreibung (gemeinfrei).",mb:4.0},
+ {file:"menge1939.json",type:"bible",title:"Menge 1939",short:"Menge",desc:"Deutsche Bibel (Menge-Bibel).",mb:4.7}];
+async function installCat(c,msg){
+ msg(c.title+": lade herunter …");await tick();
+ let r=null;try{r=await fetch("data/"+c.file);if(!r.ok)r=null}catch(e){r=null}
+ if(!r){try{r=await fetch(c.file)}catch(e){throw new Error("Download nicht möglich: "+e.message)}}
+ if(!r.ok)throw new Error("Download fehlgeschlagen (HTTP "+r.status+")");
+ const j=await r.json();msg(c.title+": speichere …");await tick();
+ const id="m"+Date.now()+Math.random().toString(36).slice(2,5),mod={id,title:c.title,short:c.short,type:c.type,added:Date.now(),count:0,src:c.file};
+ let ents=[],n=0;const E=o=>{o.id=id+"|"+(n++);o.mod=id;ents.push(o)};
+ if(c.type==="bible"){mod.strongs=!!j.s;
+  for(let b=0;b<66;b++)(j.b[b]||[]).forEach((vs,ci)=>{const verses=[];vs.forEach((t,k)=>{if(t)verses.push([k+1,t])});if(verses.length)E({kind:"b",book:b,chap:ci+1,verses})})}
+ else for(const[num,lem,tr,pr,der,def,kj]of j.d){
+  const key=num+" "+lem+" "+tr;
+  E({kind:"d",book:-1,chap:0,key,keyl:(key+" "+def+" "+kj).toLowerCase(),num,html:`<p><b style="font-size:1.2em">${esc(lem)}</b> <span class="mut">${esc(tr)}${pr?" · "+esc(pr):""}</span></p><p>${esc(def)}</p>${kj?`<p class="mut"><b>KJV:</b> ${esc(kj)}</p>`:""}${der?`<p class="mut"><b>Herkunft:</b> ${esc(der)}</p>`:""}<p><button data-conc="${num}">Alle Verse mit ${num}</button></p>`})}
+ await bulkEnts(ents);mod.count=n;await putOne("mods",mod);return mod}
+const TN={bible:"Bibel",comm:"Kommentar",dict:"Lexikon",other:"Nachschlagewerk"};
+const back=()=>`<button class="bk" id="mb">‹ Menü</button>`;
+async function vMore(){const s=S.sub;
+ if(!s){main.innerHTML=`<div class="mpage">${menuHTML()}</div>`;bindMenu(main);return}
+ const page=async html=>{main.innerHTML=back()+html;$("#mb").onclick=()=>{S.sub="";save();draw()}};
+ if(s.startsWith("dl:")){const t=s.slice(3),items=CAT.filter(c=>c.type===t);
+  await page(`<h3 class="ch">Download · ${{bible:"Bibeln",comm:"Kommentare",dict:"Lexika",other:"Nachschlagewerke"}[t]}</h3><div class="mut">Gemeinfreie Module. Sie werden einmal geladen und danach offline gespeichert.</div>`+
+   (items.length?items.map(c=>{const have=MODS.some(m=>m.src===c.file);return`<div class="card"><b>${esc(c.title)}</b> <span class="mut">· ca. ${c.mb} MB</span><div class="mut">${esc(c.desc)}</div><div style="margin-top:6px">${have?'<span class="mut">✓ installiert</span>':`<button class="p" data-c="${CAT.indexOf(c)}">Installieren</button>`}</div></div>`}).join(""):`<div class="card mut">Im Katalog gibt es hier noch nichts. Eigene EPUBs fügst du über „Import (EPUB)" hinzu.</div>`)+`<div id="cmsg" class="mut"></div>`);
+  main.querySelectorAll("[data-c]").forEach(b=>b.onclick=async()=>{const c=CAT[b.dataset.c],m=$("#cmsg");main.querySelectorAll("[data-c]").forEach(x=>x.disabled=true);
+   try{const mod=await installCat(c,t=>m.textContent=t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);if(mod.type==="bible"&&mods("bible").length===1)S.sel[mod.id]=true;save();await vMore();$("#cmsg").textContent="✓ "+mod.title+" installiert"}
+   catch(err){m.textContent="Fehler: "+err.message;main.querySelectorAll("[data-c]").forEach(x=>x.disabled=false)}});return}
+ if(s==="inst"){let est="";try{const e=await navigator.storage.estimate();est=`<div class="mut">Speicher belegt: ${(e.usage/1048576).toFixed(0)} MB</div>`}catch(e){}
+  await page(`<h3 class="ch">Installiert</h3>${est}`+(MODS.map(m=>`<div class="card"><b>${esc(m.title)}</b><div class="mut">${TN[m.type]} · ${m.count} Einträge${m.strongs?" · Strong-Nummern":""}</div><div class="row" style="margin-top:6px"><button data-d="${m.id}" class="mut">Löschen</button></div></div>`).join("")||'<p class="mut">Noch nichts installiert.</p>'));
+  main.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{if(!b.dataset.s){b.dataset.s=1;b.textContent="Wirklich löschen?";return}await delMod(b.dataset.d);MODS=await allOf("mods");draw()});return}
+ if(s==="imp"){await page(`<h3 class="ch">Import (EPUB)</h3><div class="card"><select id="ty" class="f"><option value="auto">Typ automatisch erkennen</option><option value="bible">Bibel</option><option value="comm">Kommentar</option><option value="dict">Lexikon / Wörterbuch</option><option value="other">Sonstiges Buch (nur lesen)</option></select>
+  <label class="btn p" style="display:block;text-align:center;margin-top:8px">EPUB wählen<input id="file" type="file" accept=".epub,application/epub+zip" multiple hidden></label><div id="msg" class="mut" style="margin-top:6px"></div></div><p class="mut">„Automatisch" erkennt Kommentare mit Vers-Bereichen. Für Bibeln und Lexika den Typ selbst wählen.</p>`);
+  $("#file").onchange=async e=>{const m=$("#msg");for(const f of e.target.files){try{const mod=await importEpub(f,$("#ty").value,t=>m.textContent=f.name+": "+t);MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);m.textContent="✓ "+mod.title+" ("+TN[mod.type]+", "+mod.count+")";if(mod.type==="bible"&&mods("bible").length===1)S.sel[mod.id]=true}catch(err){m.textContent="Fehler bei "+f.name+": "+err.message;return}}};return}
+ if(s==="disp"){await page(`<h3 class="ch">Anzeige</h3><div class="card"><div class="row"><b style="flex:1">Schriftgröße: <span id="fv">${S.fs}</span></b><button id="f1">A−</button><button id="f2">A+</button></div></div>
+  <div class="card"><b>Design</b><div class="row" style="margin-top:6px">${[["sepia","Sepia"],["light","Hell"],["dark","Dunkel"]].map(([k,l])=>`<button class="tg${S.theme===k?" on":""}" data-th="${k}">${l}</button>`).join("")}</div></div>
+  <div class="card"><div class="row"><b style="flex:1">Strong-Nummern im Text</b><button id="sn" class="tg${S.sn===false?"":" on"}">${S.sn===false?"aus":"an"}</button></div></div>`);
+  const fs=d=>{S.fs=Math.max(13,Math.min(32,S.fs+d));$("#fv").textContent=S.fs;save();applyTheme()};$("#f1").onclick=()=>fs(-1);$("#f2").onclick=()=>fs(1);
+  main.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.th;save();drawAll()});
+  $("#sn").onclick=()=>{S.sn=S.sn===false;save();draw()};return}
+ if(s==="notes"||s==="hl"||s==="bm"){const kind={notes:"note",hl:"hl",bm:"bm"}[s],ttl={notes:"Studiennotizen",hl:"Markierte Verse",bm:"Lesezeichen"}[s];
+  const all=(await allOf("notes")).filter(n=>n.kind===kind).sort((a,b)=>a.b-b.b||a.c-b.c||a.v-b.v);
+  const bs=mods("bible")[0];const cache={};
+  const txt=async n=>{if(!bs)return"";const k=n.b+"|"+n.c;if(!(k in cache))cache[k]=(await entsBC(bs.id,n.b,n.c))[0];const x=cache[k]&&cache[k].verses.find(a=>a[0]===n.v);return x?x[1].replace(tag,"").replace(/<[^>]+>/g," "):""};
+  const rows=[];for(const n of all)rows.push(`<div class="card"><div class="item" style="border:0;padding:0" data-g="${n.id}"><b>${esc(refName(n.b,n.c,n.v))}</b><div class="mut">${esc((await txt(n)).slice(0,160))}</div>${n.text?`<div>${esc(n.text)}</div>`:""}</div><button data-dn="${n.id}" class="mut" style="margin-top:6px">Löschen</button></div>`);
+  await page(`<h3 class="ch">${ttl}</h3>${rows.join("")||'<p class="mut">Noch nichts. Tippe in der Bibel auf einen Vers: Markieren, Notiz oder Lesezeichen.</p>'}`);
+  main.querySelectorAll("[data-g]").forEach(el=>el.onclick=()=>{const n=all.find(x=>x.id===el.dataset.g);S.autoScroll=true;goRef(n.b,n.c,n.v,"bible")});
+  main.querySelectorAll("[data-dn]").forEach(el=>el.onclick=async()=>{await delOne("notes",el.dataset.dn);draw()});return}
+ if(s==="bak"){await page(`<h3 class="ch">Sicherung</h3><div class="card"><b>Notizen, Markierungen &amp; Lesezeichen</b><p class="mut">Exportiere sie als Text und bewahre ihn auf (z. B. in Notizen oder Dateien). Die installierten Module lassen sich jederzeit neu laden.</p>
+  <div class="row"><button class="p" id="be">Kopieren</button><button id="bf">Als Datei</button></div><div id="bm" class="mut" style="margin-top:6px"></div></div>
+  <div class="card"><b>Wiederherstellen</b><textarea id="bt" rows="4" placeholder="Gesicherten Text hier einfügen …"></textarea><div class="row" style="margin-top:8px"><button id="bi">Einfügen &amp; wiederherstellen</button><label class="btn">Datei<input id="bfi" type="file" accept=".json" hidden></label></div></div>`);
+  const dump=async()=>JSON.stringify({v:1,notes:await allOf("notes")});
+  $("#be").onclick=async()=>{try{await navigator.clipboard.writeText(await dump());$("#bm").textContent="✓ In die Zwischenablage kopiert"}catch(e){$("#bm").textContent="Kopieren nicht möglich – nutze „Als Datei“"}};
+  $("#bf").onclick=async()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([await dump()],{type:"application/json"}));a.download="bibelstudium-sicherung.json";document.body.appendChild(a);a.click();a.remove();$("#bm").textContent="Datei erstellt"}catch(e){$("#bm").textContent="Download hier nicht möglich"}};
+  const restore=async txt=>{try{const j=JSON.parse(txt);for(const n of j.notes||[])await putOne("notes",n);$("#bm").textContent="✓ "+(j.notes||[]).length+" Einträge wiederhergestellt"}catch(e){$("#bm").textContent="Fehler: kein gültiger Text"}};
+  $("#bi").onclick=()=>restore($("#bt").value);$("#bfi").onchange=async e=>{if(e.target.files[0])restore(await e.target.files[0].text())};return}
+ if(s==="help"){await page(`<h3 class="ch">Anleitung</h3><div class="card"><p><b>Auf dem iPhone installieren:</b> App-Adresse in Safari öffnen → Teilen → „Zum Home-Bildschirm". Danach startet sie wie eine App, auch ohne Internet.</p><p><b>Lesen:</b> Buch-Symbol oben rechts wählt Buch und Kapitel. Pfeile am Rand oder Wischen blättern.</p><p><b>Vers antippen:</b> Markieren (4 Farben), Notiz, Lesezeichen, Kopieren, Kommentar.</p><p><b>Strong:</b> Nummer antippen öffnet das Lexikon, dort „Alle Verse mit …".</p><p><b>Kommentar:</b> folgt dem gewählten Vers.</p></div>`);return}
+ S.sub="";vMore()}
+
+/* ================= Start ================= */
+function bindFrame(){
+ $("#bm").onclick=()=>{const p=openPanel("left",`<div class="pb" style="padding-top:calc(env(safe-area-inset-top) + 8px)">${menuHTML()}</div>`);bindMenu(p)};
+ $("#bs").onclick=()=>{S.tab="search";S.sub="";drawAll()};
+ $("#bh").onclick=()=>{S.tab="hist";S.sub="";drawAll()};
+ $("#bb").onclick=()=>bookPanel(S.tab);
+ $("#ttl").onclick=()=>{if(S.tab==="bible")pickModules();else if(S.tab==="comm")pickComm()};
+ $("#scrim").onclick=closePanel;$("#al").onclick=()=>step(-1);$("#ar").onclick=()=>step(1);
+ let x0=0,y0=0;main.addEventListener("touchstart",e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+ main.addEventListener("touchend",e=>{if(S.tab!=="bible"&&S.tab!=="comm")return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(dx)>90&&Math.abs(dy)<50&&!getSelection().toString())step(dx<0?1:-1)},{passive:true})}
+openDB().then(async()=>{MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);
+ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+ try{if(location.protocol.startsWith("http")&&"serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+ S.autoScroll=true;bindFrame();drawAll();
+ window.__bs={S,get MODS(){return MODS},importEpub,allOf}});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+Bibelstudium - Offline-App fuer iPhone
+Alle Dateien liegen flach in einem Ordner (keine Unterordner), damit man sie auf dem iPhone
+per Webseite hochladen kann (z. B. GitHub Pages). Anleitung: siehe Chat.
