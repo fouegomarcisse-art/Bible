@@ -42,6 +42,7 @@ h3.ch{text-align:center;font-size:1.05em;margin:.2em 0 .8em;color:var(--mut);let
 /* Verse */
 .vp{font-size:var(--fs);line-height:var(--lh,1.55);padding:5px 4px;margin:2px 0;border-radius:4px}
 .vp.sel{background:var(--sel)}
+.sech{text-align:center;font-weight:700;font-size:1.08em;margin:1.3em 0 .5em;color:var(--fg)}
 a.cs{display:inline-block;min-width:1.35em;height:1.35em;line-height:1.35em;text-align:center;border-radius:50%;background:var(--acc);color:#fff;font:700 .72em/1.35em sans-serif;margin-right:5px;vertical-align:.12em;cursor:pointer}a.cs.on{outline:2px solid var(--acc);outline-offset:1px;background:#fff;color:var(--acc)}
 a.vr{color:var(--ref);text-decoration:underline;font-size:.92em;margin-right:3px}
 .mk{font-size:.8em;color:var(--acc)}
@@ -57,8 +58,8 @@ a.vr{color:var(--ref);text-decoration:underline;font-size:.92em;margin-right:3px
 #aud{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom) + 66px);z-index:14;display:none;align-items:center;gap:2px;background:var(--navy);color:#fff;border-radius:14px;padding:4px 6px;box-shadow:0 6px 24px #0005}
 #aud button{background:none;border:0;color:#fff;font-size:20px;min-width:42px;height:42px;padding:0}
 #aud span{flex:1;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 4px}
-#trb{position:fixed;right:8px;top:calc(62px + env(safe-area-inset-top));z-index:9;display:none;gap:6px}
-#trb button{background:var(--navy);color:#fff;border:0;border-radius:16px;padding:7px 12px;font-size:13px;box-shadow:0 2px 10px #0004}
+#trb{position:fixed;right:8px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:9;display:none;gap:6px}
+#trb button{background:var(--navy);color:#fff;border:0;border-radius:16px;padding:6px 11px;font-size:12px;opacity:.92;box-shadow:0 2px 10px #0004}
 .trl{font-size:.92em;color:var(--acc);border-left:3px solid var(--acc);padding-left:8px;margin:2px 0 10px;font-style:italic}
 .pb2{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0}.pb2>i{display:block;height:100%;background:var(--acc)}
 .big{font-size:1.15em;line-height:1.5}
@@ -267,7 +268,7 @@ const OVR=/^(.*?)\s*(\d+):\s*overview\s*$/i;
 
 async function importJson(file,msg){const j=JSON.parse(await file.text());const base=file.name.replace(/\.json$/i,"");
  const known=CAT.find(x=>x.file===file.name);
- const type=known?known.type:(j.b?"bible":j.e?"comm":j.c?"other":(j.r||j.d)?"dict":null);if(!type)throw new Error("Unbekanntes Format");
+ const type=known?known.type:(j.b?"bible":j.h?"heads":j.e?"comm":j.c?"other":(j.r||j.d)?"dict":null);if(!type)throw new Error("Unbekanntes Format");
  const c=known?{...known,json:j}:{file:file.name,type,title:j.t||base,short:(j.t||base).slice(0,8),json:j};
  return installCat(c,msg)}
 async function importText(file,msg){
@@ -427,7 +428,7 @@ async function importEpub(file,type,msg){
 let MODS=[],S={tab:"bible",sub:"",b:42,c:1,v:1,sel:{},sn:true,theme:"sepia",fs:19,hist:[],cm:null,cs:{},par:"stack",lh:1.55,ff:"sans",rate:1,vo:{},read:{},days:[],ac:"green",ic:true,warm:false,awake:false,sq:{sc:"all",ts:"all"}};
 try{Object.assign(S,JSON.parse(localStorage.getItem("bs_state")||"{}"))}catch(e){}
 S.sub="";S.reader=null;if(["search","hist","reader"].includes(S.tab))S.tab="bible";
-const save=()=>{try{localStorage.setItem("bs_state",JSON.stringify({tab:S.tab,b:S.b,c:S.c,v:S.v,sel:S.sel,sn:S.sn,theme:S.theme,fs:S.fs,hist:S.hist,cm:S.cm,cs:S.cs,par:S.par,lh:S.lh,ff:S.ff,rate:S.rate,vo:S.vo,read:S.read,days:S.days,ac:S.ac,ic:S.ic,warm:S.warm,awake:S.awake,sq:S.sq}))}catch(e){}};
+const save=()=>{try{localStorage.setItem("bs_state",JSON.stringify({tab:S.tab,b:S.b,c:S.c,v:S.v,sel:S.sel,sn:S.sn,theme:S.theme,fs:S.fs,hist:S.hist,cm:S.cm,cs:S.cs,hd:S.hd,tr:S.tr,al:S.al,par:S.par,lh:S.lh,ff:S.ff,rate:S.rate,vo:S.vo,read:S.read,days:S.days,ac:S.ac,ic:S.ic,warm:S.warm,awake:S.awake,sq:S.sq}))}catch(e){}};
 const $=s=>document.querySelector(s),main=$("#main");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mods=t=>MODS.filter(m=>m.type===t);
@@ -468,7 +469,7 @@ function drawVbar(t){const vb=$("#vbar"),on=t==="bible"||t==="comm";vb.style.dis
  vb.querySelectorAll("[data-vb]").forEach(b=>b.onclick=()=>{const id=b.dataset.vb;if(id==="+"){S.tab="more";S.sub="dl:bible";save();drawAll();return}
   const act=activeBibles();if(act.length===1&&act[0].id===id)return;const was=act.some(m=>m.id===id);mods("bible").forEach(m=>S.sel[m.id]=act.some(a=>a.id===m.id));S.sel[id]=!was;save();drawVbar("bible");draw(true)});
  vb.querySelectorAll("[data-vc]").forEach(b=>b.onclick=()=>{const id=b.dataset.vc;if(id==="+"){S.tab="more";S.sub="dl:comm";save();drawAll();return}const act=actComm();if(act.length===1&&act[0].id===id)return;const was=act.some(m=>m.id===id);S.cs={};act.forEach(m=>S.cs[m.id]=true);S.cs[id]=!was;S.cm=id;save();drawAll()})}
-function drawBar(){const t=S.tab;let ttl="Bible Study";$("#trb").style.display=["comm","reader","dict"].includes(t)?"flex":"none";
+function drawBar(){const t=S.tab;let ttl="Bible Study";$("#trb").style.display=S.tr!==false&&["comm","reader","dict"].includes(t)?"flex":"none";
  if(t==="bible"){const a=activeBibles();ttl=a.length?a.map(m=>m.short||m.title).join(" · "):"Bible"}
  else if(t==="comm"){const ac=actComm();ttl=ac.length>1?ac.map(m=>m.short||m.title).join(" · "):ac[0]?ac[0].title:"Commentary"}
  else ttl={ref:"Reference books",dict:"Lexicon",more:"Menu",search:"Search",hist:"History",reader:"Reading"}[t]||ttl;
@@ -527,6 +528,8 @@ function openSettings(){const m=$("#sm");$("#pk").style.display="none";m.style.d
  <div class="sr" style="flex-direction:column;align-items:stretch"><div>Appearance<small>Light, dark or automatic</small></div>${seg([["auto","Auto"],["light","Light"],["sepia","Sepia"],["dark","Dark"],["black","Black"]],S.theme,"th")}</div>
  ${sw("swW",S.warm,"Eye comfort","Warm light filter")}
  ${sw("swC",S.ic!==false,"Commentary marker","A C before verses that have commentary; tap to open it")}
+ ${sw("swT",S.tr!==false,"Translate buttons","Français / English buttons in Commentary, Lexicon and books")}
+ ${sw("swH",S.hd!==false,"Section headings","Titles above passages (needs the Headings module or the NT commentary)")}
  ${sw("swS",S.sn!==false,"Strong’s numbers","Show in text")}
  ${sw("swP",S.par==="cols","Bibles side by side","Parallel view in columns")}
  ${sw("swA",S.awake,"Keep screen on","Do not lock the display")}
@@ -539,7 +542,7 @@ function openSettings(){const m=$("#sm");$("#pk").style.display="none";m.style.d
  const tog=(id,fn)=>$("#"+id).onclick=()=>{fn();save();applyTheme();const y=m.scrollTop;if(S.tab==="bible"||S.tab==="comm")draw(true);openSettings();$("#sm").scrollTop=y};
  $("#smx").onclick=closePanel;
  m.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.th;save();applyTheme();openSettings()});
- tog("swW",()=>S.warm=!S.warm);tog("swC",()=>S.ic=S.ic===false);tog("swS",()=>S.sn=S.sn===false);tog("swP",()=>S.par=S.par==="cols"?"stack":"cols");tog("swA",()=>S.awake=!S.awake);
+ tog("swW",()=>S.warm=!S.warm);tog("swC",()=>S.ic=S.ic===false);tog("swS",()=>S.sn=S.sn===false);tog("swH",()=>S.hd=S.hd===false);tog("swT",()=>{S.tr=S.tr===false;drawBar()});tog("swP",()=>S.par=S.par==="cols"?"stack":"cols");tog("swA",()=>S.awake=!S.awake);
  $("#sF").onchange=e=>{S.ff=e.target.value;save();applyTheme();$("#fsp").style.fontFamily=FF[S.ff]};
  $("#sZ").oninput=e=>{S.fs=+e.target.value;$("#fsv").textContent=S.fs;$("#fsp").style.fontSize=S.fs+"px";applyTheme()};$("#sZ").onchange=()=>{save();if(S.tab==="bible"||S.tab==="comm")draw(true)};
  $("#sL").onchange=e=>{S.lh=+e.target.value;save();applyTheme()};
@@ -592,6 +595,9 @@ async function vBible(){
  if(!per.some(p=>p.e))h+=`<p class="mut" style="text-align:center">This chapter is not available in this Bible.</p>`;
  const fmt=(p,x)=>{let t=esc(x[1]).replace(/&lt;(\/?)(em|i|b|strong)&gt;/g,"<$1$2>");
   t=p.m.strongs?t.replace(/\[?\b([GH]\d{1,4})\b\]?/g,S.sn===false?"":'<a class="sn" data-n="$1">$1</a>'):t;return t};
+ const hdm=new Map();
+ if(S.hd!==false){try{const hm=mods("heads");for(const m of hm)for(const e of await entsBC(m.id,S.b,S.c)){if(e.kind==="h"&&e.title&&!hdm.has(e.v1))hdm.set(e.v1,e.title)}
+  if(!hm.length)for(const cm_ of mods("comm"))for(const e of await entsBC(cm_.id,S.b,S.c)){if(e.v1>0&&e.chap===S.c&&e.title&&String(e.html).startsWith('<div class="nsec">')&&!hdm.has(e.v1))hdm.set(e.v1,e.title)}}catch(e){}}
  const icm=new Map(),cvm=new Map();let ce=[];const cmods_n=actComm().length;
  if(S.ic!==false&&mods("comm").length){const cs_=mods("comm"),cmods=actComm();
   try{for(const cm_ of cmods)for(const e of await entsBC(cm_.id,S.b,S.c)){if(!(e.v1>0)||e.chap!==S.c)continue;e._m=cm_;ce.push(e);
@@ -600,6 +606,7 @@ async function vBible(){
  for(let v=1;v<=maxN;v++){
   const rows=per.map(p=>{const x=p.e&&p.e.verses.find(a=>a[0]===v);return x?{p,x}:null}).filter(Boolean);if(!rows.length)continue;
   const mk=(bm.has(v)?"★":"")+(nt.has(v)?"✎":"");
+  if(hdm.has(v))h+=`<div class="sech">${esc(hdm.get(v))}</div>`;
   h+=`<div class="vp${v===S.v?" sel":""}${S.par==="cols"&&rows.length>1&&rows.length<4?" cols":""}" data-v="${v}">${cvm.has(v)?`<a class="cs" data-v="${v}" title="Commentary">C</a>`:""}<a class="vr">${esc(refShort(S.b,S.c,v))}</a>${mk?`<span class="mk">${mk}</span>`:""} `+
    (rows.length===1&&per.length===1?`<span class="tx${hl[v]?" h"+hl[v]:""}" data-mod="${rows[0].p.m.id}">${fmt(rows[0].p,rows[0].x)}</span>`:`<div class="mlg" style="--n:${rows.length}">`+rows.map(r=>`<div class="ml"><span class="tl">${esc(r.p.m.short||r.p.m.title.slice(0,5))}</span> <span class="tx${hl[v]?" h"+hl[v]:""}" data-mod="${r.p.m.id}">${fmt(r.p,r.x)}</span></div>`).join("")+`</div>`)+`</div>`;if(icm.has(v))h+=`<div class="icw" data-v="${v}" hidden>`+icm.get(v).map(e=>`<div class="ic open" data-e="${e.id}">${e.title&&plain(e.html).startsWith(e.title.slice(0,20))?"":`<div class="ict">${esc(e.title||(e.chap+":"+e.v1+(e.ev>e.v1?"–"+e.ev:"")))}${cmods_n>1?` <span class="mut">· ${esc(e._m.short||e._m.title.slice(0,14))}</span>`:""}${e.ev>e.v1&&e.ec===e.chap?` <span class="mut">(${e.v1}–${e.ev})</span>`:""}</div>`}<div class="icb" data-wk="e:${e.id}">${e.html}</div></div>`).join("")+`</div>`}
  const rk=S.b+":"+S.c;h+=`<div class="navb"><button id="np">‹</button><button id="nr" class="tg${S.read[rk]?" on":""}">${S.read[rk]?"✓ read":"Mark as read"}</button><button id="nn" class="p">Next ›</button></div>`;
@@ -674,16 +681,18 @@ async function commHtml(sel,showTitle){
  let h=showTitle?`<h3 class="ch" style="color:var(--acc);margin-top:1.2em">${esc(sel.title)}</h3>`:"";
  if(!es.length)h+=`<p class="mut" style="text-align:center">No entry for this chapter${showTitle?"":" in this commentary"}.</p>`;
  const anyAct=es.some(covers);let first=true;
- for(const e of es){const a=covers(e);h+=`<details class="${a?"act":""}" ${a||(e.v1===0&&!anyAct)?"open":""} ${a&&first&&!showTitle?'id="first"':""}><summary><span class="r">${rng(e)||"Overview"}</span>${esc(e.v1?e.title:"")}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
+ for(const e of es){const a=covers(e);const r=rng(e)||"Overview",tt=(e.title||"").trim(),good=e.v1&&tt&&tt!==r&&!/^\d+:\d+([–-]\d+)?$/.test(tt),pv=good?tt:(e.v1?plain(e.html).slice(0,70)+"…":"");
+  h+=`<details class="${a?"act":""}" open ${a&&first&&!showTitle?'id="first"':""}><summary><span class="r">${r}</span>${esc(pv)}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
  return h}
 async function vComm(){
  const cs=mods("comm");
  if(!cs.length)return empty("No commentary yet","Add one under Menu → Download → Commentaries or Import (EPUB). It then follows the selected verse automatically.","Open Download",()=>{S.tab="more";S.sub="dl:comm";drawAll()});
  const sl=actComm(),all=sl.length>1,sel=sl[0];
- let h="";
+ let h=`<div class="row" style="justify-content:flex-end"><button id="ca">Collapse all</button></div>`;
  h+=`<h3 class="ch">${esc(BKS[S.b].de)} ${S.c}${S.v?","+S.v:""}</h3>`;
  if(all){for(const m of sl)h+=await commHtml(m,true)}else h+=await commHtml(sel,false);
  main.innerHTML=h;
+ const ca=$("#ca");if(ca)ca.onclick=()=>{const ds=[...main.querySelectorAll("details")],open=ds.some(d=>d.open);ds.forEach(d=>d.open=!open);ca.textContent=open?"Expand all":"Collapse all"};
  const f=$("#first");if(f)setTimeout(()=>f.scrollIntoView({block:"start"}),30)}
 
 /* ================= Nachschlagewerke (Sonstiges) ================= */
@@ -775,7 +784,7 @@ function auMark(el){main.querySelectorAll(".pl").forEach(x=>x.classList.remove("
 function auUI(){const a=$("#aud");a.style.display=(AU.on||AU.paused)?"flex":"none";$("#au1").textContent=AU.paused?"▶":"⏸";$("#au3").textContent=(S.rate||1)+"×";
  const q=AU.q[AU.i];$("#aul").textContent=q?q.t.slice(0,60):"";$("#ba").style.opacity=(AU.on||AU.paused)?".7":"1"}
 function auPlay(i){if(!TTS)return;AU.tok++;const tok=AU.tok;speechSynthesis.cancel();if(i>=AU.q.length)return auEnd();if(i<0)i=0;AU.i=i;const q=AU.q[i];
- const u=new SpeechSynthesisUtterance(q.t),l=gl(q.t);u.lang=LC[l];const v=voiceFor(l);if(v)u.voice=v;u.rate=S.rate||1;
+ const u=new SpeechSynthesisUtterance(q.t),l=(S.al&&S.al!=="auto")?S.al:gl(q.t);u.lang=LC[l];const v=voiceFor(l);if(v)u.voice=v;u.rate=S.rate||1;
  u.onend=()=>{if(tok===AU.tok&&AU.on&&!AU.paused)auPlay(i+1)};
  u.onerror=e=>{if(tok===AU.tok&&e.error!=="canceled"&&e.error!=="interrupted"){AU.on=false;auUI()}};
  AU.on=true;AU.paused=false;auMark(q.el);speechSynthesis.speak(u);auUI()}
@@ -855,6 +864,7 @@ const CAT=[
  {file:"bridges-ps119.json",type:"comm",title:"Exposition of Psalm 119 – Charles Bridges",short:"Bridges",desc:"Verse by verse through Psalm 119.",mb:0.9},
  {file:"candlish-1john.json",type:"comm",title:"The First Epistle of John – Robert Candlish",short:"Candlish",desc:"46 lectures on the First Epistle of John.",mb:1.1},
  {file:"ntcomplete.json",type:"comm",title:"New Testament Commentary (Complete)",short:"NT-K",desc:"Commentary on every verse from Matthew to Jude (Revelation is not in the book).",mb:37},
+ {file:"headings-nlt.json",type:"heads",title:"Section headings (from NLT Study Bible)",short:"Headings",desc:"Section titles for the whole Bible (2,400 headings), shown above passages in any Bible.",mb:0.1},
  {file:"strongs.json",type:"dict",title:"Strong’s Dictionary",short:"Strong",desc:"Greek (5,523) and Hebrew (8,674): root word, pronunciation, meaning, concordance.",mb:2.3}];
 async function installCat(c,msg){
  let j=c.json;
@@ -867,6 +877,7 @@ async function installCat(c,msg){
  const id="m"+Date.now()+Math.random().toString(36).slice(2,5),mod={id,title:c.title,short:c.short,type:c.type,added:Date.now(),count:0,src:c.file};
  if(c.type==="other"){mod.chapters=j.c.map(([title,html])=>({title,html}));mod.count=mod.chapters.length;await putOne("mods",mod);return mod}
  let ents=[],n=0;const E=o=>{o.id=id+"|"+(n++);o.mod=id;ents.push(o)};
+ if(c.type==="heads"){for(const[book,chap,v,title]of j.h){E({kind:"h",book,chap,v1:v,ec:chap,ev:v,title,html:""})}await bulkEnts(ents);mod.count+=ents.length;await putOne("mods",mod);return mod}
  if(c.type==="comm"){for(const[book,chap,v1,ec,ev,title,html]of j.e){E({kind:"c",book,chap,v1,ec,ev,title,html});if(ents.length>=400){await bulkEnts(ents);mod.count+=ents.length;ents=[];await tick()}}await bulkEnts(ents);mod.count+=ents.length;await putOne("mods",mod);return mod}
  if(c.type==="bible"){mod.strongs=!!j.s;
   for(let b=0;b<66;b++)(j.b[b]||[]).forEach((vs,ci)=>{const verses=[];vs.forEach((t,k)=>{if(t)verses.push([k+1,t])});if(verses.length)E({kind:"b",book:b,chap:ci+1,verses})})}
@@ -905,12 +916,12 @@ async function installRemoteComm(c,msg){
  msg(c.title+": speichere …");await tick();await bulkEnts(ents);
  const mod={id,title:c.title,short:c.short||c.title.slice(0,8),type:"comm",added:Date.now(),count:n,src:"remote:"+c.remote};
  await putOne("mods",mod);return mod}
-const TN={bible:"Bible",comm:"Commentary",dict:"Lexicon",other:"Reference book"};
+const TN={heads:"Headings",bible:"Bible",comm:"Commentary",dict:"Lexicon",other:"Reference book"};
 const back=()=>`<button class="bk" id="mb">‹ Menu</button>`;
 async function vMore(){const s=S.sub;
  if(!s){main.innerHTML=`<div class="mpage">${menuHTML()}</div>`;bindMenu(main);return}
  const page=async html=>{main.innerHTML=back()+html;$("#mb").onclick=()=>{S.sub="";save();draw()}};
- if(s.startsWith("dl:")){const t=s.slice(3),items=CAT.filter(c=>c.type===t);
+ if(s.startsWith("dl:")){const t=s.slice(3),items=CAT.filter(c=>c.type===t||(t==="bible"&&c.type==="heads"));
   await page(`<h3 class="ch">Download · ${{bible:"Bibles",comm:"Commentaries",dict:"Lexicons",other:"Reference books"}[t]}</h3><div class="mut">Modules are loaded once and then stored offline.</div>`+
    (t==="comm"?`<div class="card"><b>Online catalog</b><div class="mut">Classic commentaries (public domain) from bible.helloao.org. Needs internet.</div><div style="margin-top:6px"><button class="p" id="oc">Load list</button></div></div><div id="ol"></div>`:"")+(items.length?items.map((c,ix)=>{const hd=c.lang&&c.lang!==(items[ix-1]||{}).lang?`<div class="sh" style="padding-left:2px">${c.lang}</div>`:"";const have=MODS.some(m=>m.src===c.file);return hd+`<div class="card"><b>${esc(c.title)}</b> <span class="mut">· approx. ${c.mb} MB</span><div class="mut">${esc(c.desc)}</div><div style="margin-top:6px">${have?'<span class="mut">✓ installed</span>':`<button class="p" data-c="${CAT.indexOf(c)}">Install</button>`}</div></div>`}).join(""):`<div class="card"><b>Your own EPUB books</b><p class="mut">Public-domain books can be found here, for example. Download the EPUB in Safari (save it in "Files") and add it under Menu → Import:</p><p><a href="https://www.gutenberg.org" target="_blank" rel="noopener">gutenberg.org</a><br><a href="https://standardebooks.org" target="_blank" rel="noopener">standardebooks.org</a><br><a href="https://ccel.org" target="_blank" rel="noopener">ccel.org</a> (Christian Classics Ethereal Library)</p></div>`)+`<div id="cmsg" class="mut"></div>`);
   const oc=$("#oc");if(oc)oc.onclick=async()=>{const ol=$("#ol");ol.innerHTML='<p class="mut">Lade Liste …</p>';
@@ -965,9 +976,11 @@ async function vMore(){const s=S.sub;
   const vl=l=>TTS?speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(l)):[];
   await page(`<h3 class="ch">Audio / Read aloud</h3><div class="card"><p>Tap the speaker icon in the top bar: the app then reads the Bible, commentary, lexicon or books aloud, continues chapter by chapter and detects the language automatically. In the verse menu, "🔊 from here" reads from the chosen verse.</p></div>
   <div class="card"><div class="row"><b style="flex:1">Tempo</b>${[[.8,"langsam"],[1,"normal"],[1.2,"schnell"],[1.5,"sehr schnell"]].map(([k,l])=>`<button class="tg${(S.rate||1)===k?" on":""}" data-rt="${k}">${l}</button>`).join("")}</div></div>
+  <div class="card"><b>Reading language</b><select class="f" id="sAL" style="margin-top:6px">${[["auto","Automatic (by text)"],["de","Always German"],["en","Always English"],["fr","Always French"]].map(([k,n])=>`<option value="${k}"${(S.al||"auto")===k?" selected":""}>${n}</option>`).join("")}</select></div>
   ${L.map(([l,n])=>`<div class="card"><b>${n} voice</b><select class="f" data-vl="${l}" style="margin-top:6px"><option value="">Automatic</option>${vl(l).map(v=>`<option${(S.vo||{})[l]===v.name?" selected":""}>${esc(v.name)}</option>`).join("")}</select><div style="margin-top:6px"><button data-tv="${l}">Sample</button></div></div>`).join("")}
   <p class="mut">${TTS?"":"This device does not support reading aloud. "}For better voices and offline use: iPhone Settings → Accessibility → Spoken Content → Voices, then download "Enhanced"/"Premium". Reading stops when the screen locks or you leave the app.</p>`);
   main.querySelectorAll("[data-rt]").forEach(b=>b.onclick=()=>{S.rate=+b.dataset.rt;save();vMore()});
+  $("#sAL").onchange=e=>{S.al=e.target.value;save()};
   main.querySelectorAll("[data-vl]").forEach(x=>x.onchange=()=>{S.vo=S.vo||{};S.vo[x.dataset.vl]=x.value;save()});
   main.querySelectorAll("[data-tv]").forEach(b=>b.onclick=()=>{if(!TTS)return;const l=b.dataset.tv;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance({en:"In the beginning God created the heaven and the earth.",de:"Am Anfang schuf Gott Himmel und Erde.",fr:"Au commencement, Dieu créa les cieux et la terre."}[l]);u.lang=LC[l];const v=voiceFor(l);if(v)u.voice=v;u.rate=S.rate||1;speechSynthesis.speak(u)});
   return}
