@@ -80,15 +80,15 @@ main.vb{padding-top:calc(108px + env(safe-area-inset-top))}
 .rph button{width:42px;height:42px;border-radius:50%;border:0;background:#8883;color:var(--fg);font-size:20px;line-height:1;padding:0}
 .rpb{overflow:auto;padding:12px 20px 22px;font-family:var(--ffam);font-size:var(--fs);line-height:var(--lh,1.55)}.rpb p{margin:0 0 .7em}.rpb sup{color:var(--mut);font-size:.65em;margin-right:2px}
 .acs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.acb{width:40px;height:40px;border-radius:50%;border:3px solid transparent;padding:0;box-shadow:0 0 0 1px #0003}.acb.on{border-color:var(--card);box-shadow:0 0 0 3px var(--fg)}
-#pk{position:fixed;left:auto;right:0;width:62%;max-width:420px;top:0;bottom:0;z-index:22;box-shadow:-8px 0 30px #0006;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
-.pkh{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:var(--pc);color:#fff;font-weight:600;font-size:1.1em}.pkh button{background:none;border:0;color:#fff;font-size:1em}
+#pk{position:fixed;left:auto;right:0;width:54%;max-width:300px;top:0;bottom:0;z-index:22;box-shadow:-8px 0 30px #0006;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
+.pkh{display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;background:var(--pc);color:#fff;font-weight:600;font-size:.95em}.pkh button{background:none;border:0;color:#fff;font-size:1em}
 .pkt{display:flex;border-bottom:1px solid var(--line)}.pkt button{flex:1;border:0;background:none;border-radius:0;padding:14px 0;letter-spacing:.06em;color:var(--fg);border-bottom:3px solid transparent}.pkt button.on{color:var(--acc);border-bottom-color:var(--acc)}
 .pkbody{overflow:auto;flex:1;padding-bottom:calc(90px + env(safe-area-inset-bottom))}
 .pks{padding:10px 16px;font-weight:600;color:var(--mut);font-size:.95em}
 .pkg{display:grid;grid-template-columns:repeat(6,1fr);background:var(--navy)}
-.pkb{border:0;border-radius:0;background:none;color:#fff;padding:18px 0;font-size:1.05em;font-weight:600;border-bottom:1px solid #ffffff22}.pkb.cur{color:#ff5c8a}
-.pkl{background:var(--navy)}.pkl .pkb{display:block;width:100%;text-align:left;padding:16px 16px}
-.pkb.sec{display:block;width:100%;text-align:left;padding:16px;background:var(--navy)}
+.pkb{border:0;border-radius:0;background:none;color:#fff;padding:11px 0;font-size:.82em;font-weight:600;border-bottom:1px solid #ffffff22}.pkb.cur{color:#ff5c8a}
+.pkl{background:var(--navy)}.pkl .pkb{display:block;width:100%;text-align:left;padding:11px 12px}
+.pkb.sec{display:block;width:100%;text-align:left;padding:11px 12px;background:var(--navy)}
 #sm{position:fixed;left:12px;right:12px;top:calc(66px + env(safe-area-inset-top));max-height:calc(100vh - 150px);overflow:auto;z-index:22;background:var(--bg);border:1px solid var(--line);border-radius:14px;display:none;box-shadow:0 10px 40px #000a}
 #sm .smh{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;font-weight:600;font-size:1.1em;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
 .sr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}.sr small{display:block;color:var(--mut)}
@@ -765,8 +765,14 @@ async function commHtml(sel,showTitle,setFirst,skipEmpty){
 async function vComm(){
  const cs=mods("comm");
  if(!cs.length)return empty("No commentary yet","Add one under Menu → Download → Commentaries or Import (EPUB). It then follows the selected verse automatically.","Open Download",()=>{S.tab="more";S.sub="dl:comm";drawAll()});
- const sel=actComm()[0],lv=S.cl||"c";
- let h=`<div class="row" style="justify-content:flex-end"><button id="ca">Collapse all</button></div>`;
+ const has=async m=>{if((await entsBC(m.id,S.b,S.c)).length)return true;return S.c>1&&(await entsBC(m.id,S.b,S.c-1)).some(e=>e.ec>=S.c)};
+ const av={};for(const m of cs)av[m.id]=await has(m);
+ let sel=actComm()[0];const lv=S.cl||"c";let auto=false;
+ if(!av[sel.id]){const alt=cs.find(m=>av[m.id]);if(alt){sel=alt;auto=true}}
+ const avl=cs.filter(m=>av[m.id]);
+ let h=`<div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div class="chips" style="flex:1">${avl.length>1?avl.map(m=>`<button class="tg${m.id===sel.id?" on":""}" data-cc="${m.id}">${esc((m.short||m.title).slice(0,14))}</button>`).join(""):""}</div><button id="ca">Collapse all</button></div>`;
+ if(auto)h+=`<p class="mut" style="margin:4px 0">Your selected commentary has nothing here – showing ${esc(sel.short||sel.title)}.</p>`;
+ if(!avl.length)h+=`<p class="mut" style="margin:4px 0">No installed commentary covers ${esc(BKS[S.b].de)} ${S.c}.</p>`;
  h+=`<h3 class="ch">${esc(BKS[S.b].de)}${lv==="b"?"":" "+S.c+(lv==="v"&&S.v?","+S.v:"")}</h3>`;
  if(lv==="c")h+=await commHtml(sel,false,true,false);
  else{
@@ -777,6 +783,7 @@ async function vComm(){
   const rng=e=>e.v1?(e.chap+":"+e.v1+(e.ev!==e.v1||e.ec!==e.chap?"–"+(e.ec!==e.chap?e.ec+":":"")+e.ev:"")):"Ch. "+e.chap;
   h+=es.length?es.map(e=>{const tt=(e.title||"").trim();return `<details open><summary><span class="r">${esc(rng(e))}</span>${esc(tt&&tt!==rng(e)?tt:"")}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`}).join(""):`<p class="mut" style="text-align:center">${lv==="b"?"No introduction or overview in this commentary.":"No entry for this verse in this commentary."}</p>`}
  main.innerHTML=h;
+ main.querySelectorAll("[data-cc]").forEach(b=>b.onclick=()=>{S.cm=b.dataset.cc;S.cs={};save();draw()});
  const ca=$("#ca");if(ca)ca.onclick=()=>{const ds=[...main.querySelectorAll("details")],open=ds.some(d=>d.open);ds.forEach(d=>d.open=!open);ca.textContent=open?"Expand all":"Collapse all"};
  const f=$("#first");if(f)setTimeout(()=>f.scrollIntoView({block:"start"}),30)}
 
