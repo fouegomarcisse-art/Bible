@@ -665,17 +665,7 @@ async function wordPopup(w){
  document.body.append(d);
  d.querySelectorAll("[data-z]").forEach(b=>b.onclick=()=>{d.dataset.z=b.dataset.z==="s"?"s":"e"});
  $("#snd").onclick=()=>d.remove();d.querySelectorAll("[data-sn]").forEach(b=>b.onclick=()=>snPopup(b.dataset.sn));return true}
-document.addEventListener("click",e=>{
- const t=e.target;if(!t.closest||t.closest("a,button,input,textarea,summary,#snc,#vbar,.vb2,#tabs,#pk,#rb2"))return;
- if(!t.closest("#main .cm,#main .vp,#main .dk"))return;
- if(getSelection().toString())return;
- let r=null;try{r=document.caretRangeFromPoint?document.caretRangeFromPoint(e.clientX,e.clientY):null}catch(x){}
- if(!r||r.startContainer.nodeType!==3)return;
- const tx=r.startContainer.data,o=r.startOffset;let a=o,b=o;
- while(a>0&&/[A-Za-zÀ-ÿ'’-]/.test(tx[a-1]))a--;while(b<tx.length&&/[A-Za-zÀ-ÿ'’-]/.test(tx[b]))b++;
- const w=tx.slice(a,b).replace(/^['’-]+|['’-]+$/g,"");
- if(w.length<4||STOPW.has(w.toLowerCase())||!mods("dict").length)return;
- setTimeout(()=>wordPopup(w).catch(x=>console.log(x)),350)},true);
+
 async function refPopup(b,c,v1,v2){
  let bi=activeBibles()[0],vs=[];
  try{const e=(await entsBC(bi.id,b,c))[0];vs=e?e.verses.filter(x=>x[0]>=v1&&x[0]<=v2):[]}catch(er){}
@@ -1228,12 +1218,17 @@ function collect(){const items=[],add=(el,t)=>{t=(t||"").replace(/\s+/g," ").tri
 function auMark(el){main.querySelectorAll(".pl").forEach(x=>x.classList.remove("pl"));if(el&&el.isConnected){el.classList.add("pl");const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-140)el.scrollIntoView({block:"center",behavior:"smooth"})}}
 function auUI(){const a=$("#aud");a.style.display=(AU.on||AU.paused)?"flex":"none";$("#au1").textContent=AU.paused?"▶":"⏸";$("#au3").textContent=(S.rate||1)+"×";
  const q=AU.q[AU.i];$("#aul").textContent=q?q.t.slice(0,60):"";$("#ba").style.opacity=(AU.on||AU.paused)?".7":"1"}
-function auPlay(i){if(!TTS)return;AU.tok++;const tok=AU.tok;speechSynthesis.cancel();if(i>=AU.q.length)return auEnd();if(i<0)i=0;AU.i=i;const q=AU.q[i];
+function auUnlock(){try{if(!AU.sil){const n=4000,b=new Uint8Array(44+n),dv=new DataView(b.buffer),w=(o,t)=>[...t].forEach((c,k)=>b[o+k]=c.charCodeAt(0));w(0,"RIFF");dv.setUint32(4,36+n,true);w(8,"WAVEfmt ");dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);dv.setUint32(24,8000,true);dv.setUint32(28,8000,true);dv.setUint16(32,1,true);dv.setUint16(34,8,true);w(36,"data");dv.setUint32(40,n,true);b.fill(128,44);AU.sil=new Audio(URL.createObjectURL(new Blob([b],{type:"audio/wav"})));AU.sil.loop=true}
+ AU.sil.play().catch(()=>{})}catch(e){}}
+function auPlay(i){if(!TTS)return;AU.tok++;const tok=AU.tok;auUnlock();const busy=speechSynthesis.speaking||speechSynthesis.pending;speechSynthesis.cancel();if(i>=AU.q.length)return auEnd();if(i<0)i=0;AU.i=i;const q=AU.q[i];
+ if(busy){AU.on=true;AU.paused=false;auMark(q.el);auUI();setTimeout(()=>{if(tok===AU.tok)auSay(i,tok)},150)}else auSay(i,tok)}
+function auSay(i,tok){const q=AU.q[i];if(!q)return;
  const u=new SpeechSynthesisUtterance(q.t),l=(S.al&&S.al!=="auto")?S.al:gl(q.t);u.lang=LC[l];const v=voiceFor(l);if(v)u.voice=v;u.rate=S.rate||1;
  u.onend=()=>{if(tok===AU.tok&&AU.on&&!AU.paused)auPlay(i+1)};
- u.onerror=e=>{if(tok===AU.tok&&e.error!=="canceled"&&e.error!=="interrupted"){AU.on=false;auUI()}};
+ u.onerror=e=>{if(tok===AU.tok&&e.error!=="canceled"&&e.error!=="interrupted"){AU.on=false;auUI();toast("Audio error: "+(e.error||"unknown")+" – check silent switch and volume")}};
+ u.volume=1;let st=false;u.onstart=()=>{st=true};setTimeout(()=>{if(tok===AU.tok&&AU.on&&!st&&!speechSynthesis.speaking){try{speechSynthesis.cancel();speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){}}},1500);
  AU.on=true;AU.paused=false;auMark(q.el);speechSynthesis.speak(u);auUI()}
-function auStop(){AU.tok++;AU.on=false;AU.paused=false;AU.q=[];try{TTS&&speechSynthesis.cancel()}catch(e){};auMark(null);try{auUI()}catch(e){}}
+function auStop(){try{AU.sil&&AU.sil.pause()}catch(e){}AU.tok++;AU.on=false;AU.paused=false;AU.q=[];try{TTS&&speechSynthesis.cancel()}catch(e){};auMark(null);try{auUI()}catch(e){}}
 function auStart(auto){if(!TTS){alert("This device does not support reading aloud.");return}
  AU.q=collect();if(!AU.q.length)return;let i=0;
  if(!auto&&S.tab==="bible"){const sel=main.querySelector(".vp.sel");if(sel){const k=AU.q.findIndex(x=>x.el===sel);if(k>0)i=k}}
