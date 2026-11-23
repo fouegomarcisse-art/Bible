@@ -347,7 +347,15 @@ async function putOne(s,o){if(!db){const i=mem[s].findIndex(x=>x.id===o.id);if(i
 async function delOne(s,id){if(!db){mem[s]=mem[s].filter(x=>x.id!==id);return}return R(st(s,"readwrite").delete(id))}
 async function bulkEnts(arr){if(!db){for(const x of arr)mem.ents.push(x);return}
  for(let i=0;i<arr.length;i+=150){await new Promise((ok,no)=>{const t=db.transaction("ents","readwrite"),s=t.objectStore("ents");arr.slice(i,i+150).forEach(x=>s.put(x));t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error||new Error("Speicher voll?"))})}}
-async function entsBC(mod,b,c){return db?R(st("ents").index("bc").getAll(IDBKeyRange.only([mod,b,c]))):mem.ents.filter(e=>e.mod===mod&&e.book===b&&e.chap===c)}
+async function entsBC0(mod,b,c){return db?R(st("ents").index("bc").getAll(IDBKeyRange.only([mod,b,c]))):mem.ents.filter(e=>e.mod===mod&&e.book===b&&e.chap===c)}
+const tl=h=>String(h||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").length;
+async function entsBC(mod,b,c){const es=await entsBC0(mod,b,c);
+ try{const m=typeof MODS!=="undefined"&&MODS.find(x=>x.id===mod);if(!m||m.type!=="comm"||m.src!=="ntcomplete.json"||b<39)return es;
+  const dm=MODS.find(x=>x.src==="Deep-Bible-Commentary.json"||x.src==="ntdeepstudy.json");if(!dm)return es;
+  const ds=await entsBC0(dm.id,b,c);if(!ds.length)return es;
+  return es.map(pe=>{const cand=ds.filter(d=>d.v1===pe.v1&&d.ec===pe.ec&&d.ev===pe.ev);
+   const de=cand.find(d=>d.title===pe.title)||(cand.length===1?cand[0]:null);
+   if(de&&tl(de.html)>1.4*tl(pe.html))return {...pe,title:de.title||pe.title,html:de.html,up:1};return pe})}catch(e){return es}}
 async function eachEnt(mod,fn){if(!db){for(const e of mem.ents)if(e.mod===mod&&fn(e)===false)return;return}
  await new Promise((ok,no)=>{const q=st("ents").index("mod").openCursor(IDBKeyRange.only(mod));q.onsuccess=()=>{const c=q.result;if(!c)return ok();if(fn(c.value)===false)return ok();c.continue()};q.onerror=()=>no(q.error)})}
 async function delMod(id){await delOne("mods",id);if(!db){mem.ents=mem.ents.filter(e=>e.mod!==id);return}
@@ -644,6 +652,30 @@ async function snPopup(n){
  $("#snv").innerHTML=`<div class="sx" style="padding:10px 0 4px">Also used in ${total} verses</div>`+hits.map((h,i)=>`<div class="xr" data-i="${i}"><b style="color:var(--acc)">${esc(refName(h.b,h.c,h.v))}</b> <span class="mut">${esc(h.t.replace(tag,"").replace(/<[^>]+>/g,"").slice(0,90))}</span> <button class="pl" data-p="${i}">+</button></div>`).join("");
  $("#snv").querySelectorAll("[data-p]").forEach(b=>b.onclick=async e=>{e.stopPropagation();const h=hits[b.dataset.p];await putOne("notes",{id:"n"+Date.now(),kind:"note",b:h.b,c:h.c,v:h.v,text:n+" – "+refName(h.b,h.c,h.v),t:Date.now()});b.textContent="✓"});
  $("#snv").querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const h=hits[el.dataset.i];d.remove();S.autoScroll=true;goRef(h.b,h.c,h.v,"bible")})}
+
+const STOPW=new Set("the and for that with this from have not but are was were his her him they them their you your our out who whom what when where which will shall unto into upon thee thou thy also then than there these those been being has had its any all can may did does done said say says one two let man men lord god".split(" "));
+async function wordPopup(w){
+ const lw=w.toLowerCase();const st0=lw.replace(/(ing|ed|es|s|d)$/,""),stem=(st0.length>=3?st0:lw).replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),re=new RegExp("(^|[^a-z])"+stem+"(e|es|ed|s|d|ing)?([^a-z]|$)");const hits=[];
+ for(const m of mods("dict")){if((S.dx||{})[m.id])continue;const hm=[];
+  await eachEnt(m.id,e=>{const h=(e.keyl||"").slice(0,140);if(re.test(h)){hm.push({m,e,k:(e.key||"").toLowerCase().includes(lw)?0:1});}return hm.length<60});hits.push(...hm)}
+ if(!hits.length)return false;hits.sort((a,b)=>a.k-b.k);const top=hits.slice(0,10);
+ document.querySelectorAll("#snc").forEach(x=>x.remove());
+ const d=document.createElement("div");d.id="snc";d.className="m1";d.dataset.z="m";
+ d.innerHTML=`<div class="sh1"><span class="mv">✥</span><button data-z="s">⌃ Shrink</button><button data-z="e">⌄ Expand</button></div><div class="sb1"><div class="sn1"><b>${esc(w)}</b><button id="snd">Done</button></div>${top.map((f,i)=>`<details ${i===0?"open":""}><summary>${esc(f.e.num?f.e.num+" · ":"")}${esc(String(f.e.key||"").replace(/^[GH]\d+\s*/,"").slice(0,40))} <span class="mut">${esc(f.m.short||f.m.title)}</span></summary><div class="dk">${f.e.html.replace(/<button[^>]*>.*?<\/button>/g,"")}${f.e.num?`<p><button class="tg" data-sn="${f.e.num}">All verses with ${f.e.num}</button></p>`:""}</div></details>`).join("")}</div>`;
+ document.body.append(d);
+ d.querySelectorAll("[data-z]").forEach(b=>b.onclick=()=>{d.dataset.z=b.dataset.z==="s"?"s":"e"});
+ $("#snd").onclick=()=>d.remove();d.querySelectorAll("[data-sn]").forEach(b=>b.onclick=()=>snPopup(b.dataset.sn));return true}
+document.addEventListener("click",e=>{
+ const t=e.target;if(!t.closest||t.closest("a,button,input,textarea,summary,#snc,#vbar,.vb2,#tabs,#pk,#rb2"))return;
+ if(!t.closest("#main .cm,#main .vp,#main .dk"))return;
+ if(getSelection().toString())return;
+ let r=null;try{r=document.caretRangeFromPoint?document.caretRangeFromPoint(e.clientX,e.clientY):null}catch(x){}
+ if(!r||r.startContainer.nodeType!==3)return;
+ const tx=r.startContainer.data,o=r.startOffset;let a=o,b=o;
+ while(a>0&&/[A-Za-zÀ-ÿ'’-]/.test(tx[a-1]))a--;while(b<tx.length&&/[A-Za-zÀ-ÿ'’-]/.test(tx[b]))b++;
+ const w=tx.slice(a,b).replace(/^['’-]+|['’-]+$/g,"");
+ if(w.length<4||STOPW.has(w.toLowerCase())||!mods("dict").length)return;
+ setTimeout(()=>wordPopup(w).catch(x=>console.log(x)),350)},true);
 async function refPopup(b,c,v1,v2){
  let bi=activeBibles()[0],vs=[];
  try{const e=(await entsBC(bi.id,b,c))[0];vs=e?e.verses.filter(x=>x[0]>=v1&&x[0]<=v2):[]}catch(er){}
@@ -663,6 +695,8 @@ function linkify(root){
  for(const t of nodes){XRE.lastIndex=0;const s=t.data;let m,last=0,html="",hit=false;
   while(m=XRE.exec(s)){const b=findBook(m[1],true);if(b<0)continue;hit=true;html+=esc(s.slice(last,m.index))+`<a class="xref" data-b="${b}" data-c="${m[2]}" data-v="${m[3]}" data-e="${m[4]||""}">${esc(m[0])}</a>`;last=m.index+m[0].length}
   if(hit){const sp=document.createElement("span");sp.innerHTML=html+esc(s.slice(last));t.replaceWith(sp)}}
+ if(mods("dict").length){const w2=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentNode.closest("a,textarea,input,summary,button")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});const ns=[];let q;while(q=w2.nextNode())if(/\b[GH]\d{1,4}\b/.test(q.data))ns.push(q);
+  for(const t of ns){const sp=document.createElement("span");sp.innerHTML=esc(t.data).replace(/\b([GH]\d{1,4})\b/g,'<a class="sn" data-n="$1">$1</a>');t.replaceWith(sp)}}
  root.querySelectorAll("a.xref").forEach(a=>a.onclick=e=>{e.preventDefault();e.stopPropagation();if(mods("bible").length)refPopup(+a.dataset.b,+a.dataset.c,+a.dataset.v,+a.dataset.e||+a.dataset.v);else{S.autoScroll=true;goRef(+a.dataset.b,+a.dataset.c,+a.dataset.v,S.tab)}});
  root.querySelectorAll("a.sn").forEach(a=>a.onclick=e=>{e.preventDefault();e.stopPropagation();snPopup(a.dataset.n)})}
 
