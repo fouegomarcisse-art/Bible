@@ -206,6 +206,43 @@ summary .r{color:var(--ref);margin-right:6px}
 .swb{width:34px;height:34px;border-radius:50%;padding:0;border:2px solid var(--line)}
 .swb.s1{background:#ffe27a}.swb.s2{background:#b9f0b0}.swb.s3{background:#b6dcff}.swb.s4{background:#ffc2dc}.swb.on{border-color:var(--fg)}
 mark{background:#ffe27a;color:#222}
+/* Picker-Feinschliff (steht ganz hinten, damit es gewinnt) */
+#pk{width:90%!important;max-width:430px!important}
+#pk .pkh{background:var(--card)!important;color:var(--fg)!important;border-bottom:1px solid var(--line)}#pk .pkh button{color:#007aff!important;font-weight:700}
+#pk .pkbody{padding:0 6px}
+#pk .pkg{grid-template-columns:repeat(3,1fr)!important;gap:8px!important;background:none!important;padding:2px 8px 8px}
+#pk .pkb{color:var(--fg)!important;border:1px solid var(--line)!important;border-radius:14px!important;padding:14px 0!important;font-size:1.02em!important;font-weight:600;font-family:var(--ffam)!important;background:var(--card)}
+#pk .pkb[style*="--cc"]{background:color-mix(in srgb,var(--cc) 16%,var(--bg))!important;border-color:color-mix(in srgb,var(--cc) 45%,var(--bg))!important}
+#pk .pkb.cur{background:var(--cc,#2f7bf6)!important;border-color:var(--cc,#2f7bf6)!important;color:#fff!important}
+#pk .pkg.big{grid-template-columns:repeat(5,1fr)!important}#pk .pkg.big .pkb{height:56px;padding:0!important;font-size:1.2em!important;font-weight:700;border:0!important}
+#pk .pkl{background:none!important;padding:0 8px}#pk .pkl .pkb{text-align:left;padding:12px 14px!important;margin-bottom:6px;font-weight:500}
+#pk .pks{color:var(--mut)!important;background:none!important;font-family:var(--ffam)!important;font-weight:700;padding:14px 12px 6px}
+#pk .pkt{display:flex;margin:10px 8px 4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+#pk .pkt button{flex:1;border:0!important;background:none!important;border-radius:999px!important;padding:9px!important;font-weight:700;color:var(--fg)!important;font-size:1em!important}
+#pk .pkt button.on{background:#2f7bf6!important;color:#fff!important}
+/* Picker als Bottom-Sheet */
+#pk{left:0!important;right:0!important;width:100%!important;max-width:none!important;top:44px!important;bottom:0!important;border-radius:28px 28px 0 0;box-shadow:0 -10px 40px #0005!important}
+#pk .pkh{justify-content:flex-start!important;gap:14px;padding:16px 18px!important;border-radius:28px 28px 0 0;background:var(--card)!important;font-size:1.25em;font-family:var(--ffam)}
+#pk .pkh b{font-weight:800;font-family:Georgia,serif}
+#pk .pkh button{background:var(--bg)!important;color:var(--fg)!important;border:1px solid var(--line)!important;border-radius:999px!important;padding:10px 22px!important;font-size:.7em!important;font-weight:600;box-shadow:0 2px 6px #0002}
+#pk>.pkt{margin:0!important;border-radius:0!important;border:0!important;border-bottom:2px solid #2f7bf6!important;padding:10px 14px!important;background:var(--bg)!important}
+#pk>.pkt button{padding:11px!important}
+#pk .pkb{font-weight:400!important}#pk .pkb.cur{font-weight:700!important}
+#pk .pkbody{overflow-y:auto;flex:1;padding-bottom:40px}
+/* Extra + Authors */
+#pk .pkrow{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:2px solid #2f7bf6;background:var(--bg)}
+#pk .pkrow .pkt{flex:1;margin:0!important}
+#pk .pkrow .pkt button{padding:10px 4px!important}
+#pk #pkau{background:var(--bg)!important;color:var(--fg)!important;border:1px solid var(--line)!important;border-radius:999px!important;padding:10px 14px!important;font-weight:700;font-size:.9em;box-shadow:none!important;white-space:nowrap}
+#pk #pkau.on{background:#2f7bf6!important;color:#fff!important;border-color:#2f7bf6!important}
+#pk .pkb small{display:block;font-size:.72em;font-weight:400;opacity:.85;margin-top:2px;color:var(--cc,var(--mut))}
+#pk .pkb.cur small{color:#fff!important}
+.xinfo{display:flex;gap:12px;align-items:center;margin:12px 14px;padding:14px;border-radius:16px;background:color-mix(in srgb,#2f7bf6 10%,var(--bg));border:1px solid color-mix(in srgb,#2f7bf6 35%,var(--bg));font-size:.95em}.xinfo small{display:block;color:var(--mut);margin-top:4px}
+.xq{display:block;width:calc(100% - 28px);margin:0 14px 10px;box-sizing:border-box;padding:12px 14px;border:0;border-radius:14px;background:var(--card);color:var(--fg);font-size:1em}
+.xh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-left:4px solid #2f7bf6;border-bottom:1px solid var(--line);font-weight:800;font-size:.85em;letter-spacing:.2px;position:sticky;top:0;background:var(--bg)}.xh i{font-style:normal;background:var(--card);border-radius:999px;padding:3px 10px;color:var(--mut);font-size:.9em}
+.xr{display:flex;gap:14px;padding:12px 14px;align-items:flex-start}.xr>b{min-width:38px;height:38px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:.9em}
+.xt{font-size:1.1em}.xc{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.xchip{color:#fff;font-weight:800;font-size:.72em;padding:3px 9px;border-radius:999px}
+.d_section{font-size:1.15em;margin:18px 0 6px}.d_csub{color:var(--mut);font-style:italic;margin:0 0 8px}.d_synthesis{padding:8px 12px;border-left:3px solid var(--acc);background:#0000000a;border-radius:6px;margin:8px 0}.d_refs,.d_scripture-reference{color:var(--acc);font-size:.9em;margin:2px 0 6px}.d_alt,.d_language-note,.d_watch{color:var(--mut);font-size:.92em}.d_plain-wording,.d_plain-clause{padding:6px 10px;background:#2f7bf611;border-radius:8px;margin:6px 0}.d_renderings,.d_connections,.d_side{margin:8px 0;padding:6px 12px;background:#0000000a;border-radius:8px}.d_full-verse{font-style:italic}.d_study-questions{padding-left:20px}.d_pray,.d_reflect{font-style:italic;color:var(--mut)}.d_key{color:var(--acc)}.d_dt{font-weight:700;margin:8px 0 0}.d_dl{margin:0 0 6px}
 </style>
 </head>
 <body>
@@ -638,21 +675,40 @@ function openPicker(t){PKT=null;PK=t==="book"?"book":t;PKB=null;PKC=null;$("#sm"
 async function chapHeads(b,c){const hs=new Map();try{const hm=mods("heads");for(const m of hm)for(const e of await entsBC(m.id,b,c)){if(e.kind==="h"&&e.title&&!hs.has(e.v1))hs.set(e.v1,e.title)}
  if(!hm.length)for(const cm_ of mods("comm"))for(const e of await entsBC(cm_.id,b,c)){if(e.v1>0&&e.chap===c&&e.title&&String(e.html).startsWith('<div class="nsec">')&&!hs.has(e.v1))hs.set(e.v1,e.title)}}catch(e){}return hs}
 let PKT=null;
-async function renderPicker(){const el=$("#pk"),tb=PKB!==null?PKB:S.b;let body="",title="Books",back="Cancel",bf=closePanel;
- if(PK==="book"){const B3="Gen Exo Lev Num Deu Jos Jdg Rut 1Sa 2Sa 1Ki 2Ki 1Ch 2Ch Ezr Neh Est Job Psa Pro Ecc Sng Isa Jer Lam Ezk Dan Hos Jol Amo Oba Jon Mic Nam Hab Zep Hag Zec Mal Mat Mrk Luk Jhn Act Rom 1Co 2Co Gal Eph Php Col 1Th 2Th 1Ti 2Ti Tit Phm Heb Jas 1Pe 2Pe 1Jn 2Jn 3Jn Jud Rev".split(" ");
+let PKAU=false;try{PKAU=!!localStorage.getItem("bs_au")}catch(e){}
+const AUT="Moses,Moses,Moses,Moses,Moses,Joshua,Unknown,Unknown,Samuel,Samuel,Unknown,Unknown,Ezra,Ezra,Ezra,Nehemiah,Unknown,Unknown,Various,Solomon,Solomon,Solomon,Isaiah,Jeremiah,Jeremiah,Ezekiel,Daniel,Hosea,Joel,Amos,Obadiah,Jonah,Micah,Nahum,Habakkuk,Zephaniah,Haggai,Zechariah,Malachi,Matthew,Mark,Luke,John,Luke,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Paul,Unknown,James,Peter,Peter,John,John,John,Jude,John".split(",");
+(function(){const A=[];for(let i=0;i<39;i++)A.push(i);})();
+const HARM=[
+["INTRODUCTIONS, BIRTH OF JESUS TO TWELVE YEARS",[["Introductions","LK1:1-4;JN1:1-18"],["Genealogy","MT1:1-17;LK3:23-38"],["John's Birth Foretold","LK1:5-25"],["Annunciation to Mary","LK1:26-38"],["Mary Visits Elizabeth","LK1:39-56"],["John the Baptist's Birth","LK1:57-80"],["Angel Appears to Joseph","MT1:18-25"],["The Birth of Jesus","LK2:1-7"],["Angels and the Shepherds","LK2:8-20"],["Presented in the Temple","LK2:21-24"],["Simeon's Prophecy","LK2:25-35"],["Anna the Prophetess","LK2:36-38"],["Visit of the Magi","MT2:1-12"],["Flight to Egypt","MT2:13-15"],["Herod Kills the Children","MT2:16-18"],["Return to Nazareth","MT2:19-23;LK2:39"],["Jesus Grows","LK2:40"],["Boy Jesus in the Temple","LK2:41-50"],["Growing in Wisdom","LK2:51-52"]]],
+["BEGINNING OF MINISTRY",[["John's Preaching","MT3:1-12;MK1:1-8;LK3:1-18"],["Baptism of Jesus","MT3:13-17;MK1:9-11;LK3:21-22"],["Temptation in the Wilderness","MT4:1-11;MK1:12-13;LK4:1-13"],["John's Testimony","JN1:19-28"],["Lamb of God","JN1:29-34"],["First Disciples","JN1:35-51"],["Wedding at Cana","JN2:1-12"],["Cleansing the Temple","JN2:13-25"],["Nicodemus","JN3:1-21"],["John's Final Testimony","JN3:22-36"],["John Imprisoned","MT14:3-5;MK6:17-20;LK3:19-20"],["Woman at the Well","JN4:1-42"],["Official's Son Healed","JN4:43-54"]]],
+["GALILEE MINISTRY",[["Rejected at Nazareth","LK4:16-30"],["Moves to Capernaum","MT4:13-17"],["Call of Four Fishermen","MT4:18-22;MK1:16-20;LK5:1-11"],["Demoniac in the Synagogue","MK1:21-28;LK4:31-37"],["Peter's Mother-in-law","MT8:14-17;MK1:29-34;LK4:38-41"],["Preaching Tour","MT4:23-25;MK1:35-39;LK4:42-44"],["Cleansing a Leper","MT8:1-4;MK1:40-45;LK5:12-16"],["Paralytic Healed","MT9:1-8;MK2:1-12;LK5:17-26"],["Call of Matthew","MT9:9-13;MK2:13-17;LK5:27-32"],["Question about Fasting","MT9:14-17;MK2:18-22;LK5:33-39"],["Pool of Bethesda","JN5:1-47"],["Lord of the Sabbath","MT12:1-8;MK2:23-28;LK6:1-5"],["Withered Hand","MT12:9-14;MK3:1-6;LK6:6-11"],["Crowds by the Sea","MT12:15-21;MK3:7-12"],["The Twelve Chosen","MK3:13-19;LK6:12-16"],["Sermon on the Mount","MT5:1-48;LK6:17-49"],["Centurion's Servant","MT8:5-13;LK7:1-10"],["Widow's Son at Nain","LK7:11-17"],["John's Question","MT11:2-19;LK7:18-35"],["Woman Anoints Jesus","LK7:36-50"],["Parable of the Sower","MT13:1-23;MK4:1-20;LK8:4-15"],["Calming the Storm","MT8:23-27;MK4:35-41;LK8:22-25"],["Gerasene Demoniac","MT8:28-34;MK5:1-20;LK8:26-39"],["Jairus' Daughter","MT9:18-26;MK5:21-43;LK8:40-56"],["Sending the Twelve","MT10:1-42;MK6:7-13;LK9:1-6"],["John Beheaded","MT14:1-12;MK6:14-29;LK9:7-9"],["Feeding the 5,000","MT14:13-21;MK6:30-44;LK9:10-17;JN6:1-15"],["Walking on Water","MT14:22-33;MK6:45-52;JN6:16-21"],["Bread of Life","JN6:22-71"]]],
+["NORTHERN JOURNEYS",[["Tradition of the Elders","MT15:1-20;MK7:1-23"],["Canaanite Woman","MT15:21-28;MK7:24-30"],["Feeding the 4,000","MT15:32-39;MK8:1-10"],["Peter's Confession","MT16:13-20;MK8:27-30;LK9:18-21"],["Jesus Foretells His Death","MT16:21-28;MK8:31-38;LK9:22-27"],["Transfiguration","MT17:1-13;MK9:2-13;LK9:28-36"],["Boy with a Demon","MT17:14-21;MK9:14-29;LK9:37-43"],["Temple Tax","MT17:24-27"],["Greatest in the Kingdom","MT18:1-14;MK9:33-50;LK9:46-50"],["Forgiveness","MT18:15-35"]]],
+["JUDEA AND PEREA",[["Feast of Tabernacles","JN7:1-52"],["Woman Caught in Adultery","JN8:1-11"],["Light of the World","JN8:12-59"],["Man Born Blind","JN9:1-41"],["The Good Shepherd","JN10:1-21"],["Mission of the Seventy","LK10:1-24"],["Good Samaritan","LK10:25-37"],["Mary and Martha","LK10:38-42"],["The Lord's Prayer","LK11:1-13"],["Feast of Dedication","JN10:22-42"],["The Rich Fool","LK12:13-34"],["Lost Sheep, Coin and Son","LK15:1-32"],["Rich Man and Lazarus","LK16:19-31"],["Raising of Lazarus","JN11:1-44"],["Ten Lepers","LK17:11-19"],["Little Children","MT19:13-15;MK10:13-16;LK18:15-17"],["Rich Young Ruler","MT19:16-30;MK10:17-31;LK18:18-30"],["Workers in the Vineyard","MT20:1-16"],["Zacchaeus","LK19:1-10"],["Blind Bartimaeus","MT20:29-34;MK10:46-52;LK18:35-43"]]],
+["PASSION WEEK",[["Anointing at Bethany","MT26:6-13;MK14:3-9;JN12:1-11"],["Triumphal Entry","MT21:1-11;MK11:1-11;LK19:28-44;JN12:12-19"],["Fig Tree Cursed","MT21:18-22;MK11:12-14"],["Cleansing the Temple","MT21:12-17;MK11:15-19;LK19:45-48"],["Authority Questioned","MT21:23-27;MK11:27-33;LK20:1-8"],["Wicked Tenants","MT21:33-46;MK12:1-12;LK20:9-19"],["Taxes to Caesar","MT22:15-22;MK12:13-17;LK20:20-26"],["Greatest Commandment","MT22:34-40;MK12:28-34"],["Woes to the Pharisees","MT23:1-39;MK12:38-40;LK20:45-47"],["Widow's Offering","MK12:41-44;LK21:1-4"],["Olivet Discourse","MT24:1-51;MK13:1-37;LK21:5-36"],["Ten Virgins","MT25:1-13"],["Parable of the Talents","MT25:14-30"],["Sheep and Goats","MT25:31-46"],["Judas Plots","MT26:14-16;MK14:10-11;LK22:3-6"]]],
+["LAST SUPPER AND ARREST",[["Passover Preparation","MT26:17-19;MK14:12-16;LK22:7-13"],["Washing the Disciples' Feet","JN13:1-20"],["The Last Supper","MT26:20-29;MK14:17-25;LK22:14-23"],["Upper Room Discourse","JN14:1-31"],["High Priestly Prayer","JN17:1-26"],["Gethsemane","MT26:36-46;MK14:32-42;LK22:39-46"],["Arrest of Jesus","MT26:47-56;MK14:43-52;LK22:47-53;JN18:1-12"],["Before the High Priest","MT26:57-68;MK14:53-65;LK22:63-71;JN18:13-24"],["Peter Denies Jesus","MT26:69-75;MK14:66-72;LK22:54-62;JN18:25-27"],["Death of Judas","MT27:3-10"],["Before Pilate","MT27:11-26;MK15:1-15;LK23:1-25;JN18:28-40"]]],
+["CRUCIFIXION, RESURRECTION, ASCENSION",[["Crucifixion","MT27:32-56;MK15:21-41;LK23:26-49;JN19:17-37"],["Burial","MT27:57-61;MK15:42-47;LK23:50-56;JN19:38-42"],["Guard at the Tomb","MT27:62-66"],["The Resurrection","MT28:1-8;MK16:1-8;LK24:1-12;JN20:1-10"],["Appears to Mary Magdalene","JN20:11-18"],["Road to Emmaus","LK24:13-35;MK16:12-13"],["Appears to the Disciples","LK24:36-49;JN20:19-23"],["Thomas Believes","JN20:24-31"],["Breakfast by the Sea","JN21:1-25"],["The Great Commission","MT28:16-20;MK16:15-18"],["The Ascension","MK16:19-20;LK24:50-53"]]]];
+const GB={MT:[39,"#3b82f6"],MK:[40,"#f08a3c"],LK:[41,"#4caf72"],JN:[42,"#a45fd0"]};
+function xRef(r){const m=/^([A-Z]{2})(\d+):(\d+)/.exec(r);return m?[GB[m[1]][0],+m[2],+m[3],m[1]]:null}
+function xList(q){q=(q||"").toLowerCase().trim().replace(/^matthew\s*/,"mt").replace(/^matt\s*/,"mt").replace(/^mark\s*/,"mk").replace(/^luke\s*/,"lk").replace(/^john\s*/,"jn");let n=0;return HARM.map(([sn,evs])=>{const rows=evs.map((e,i)=>({e,i})).filter(({e})=>!q||e[0].toLowerCase().includes(q)||e[1].toLowerCase().replace(/:/g," ").includes(q.replace(/:/g," "))||e[1].toLowerCase().split(";").some(r=>{const m=/^([a-z]{2})(\d+):(\d+)-?(\d+)?/.exec(r),k=/^([a-z]{2})\s*(\d+):(\d+)$/.exec(q);return m&&k&&m[1]===k[1]&&m[2]===k[2]&&+k[3]>=+m[3]&&+k[3]<=+(m[4]||m[3])}));if(!rows.length){n+=evs.length;return ""}const base=n;n+=evs.length;return `<div class="xh"><span>${sn}</span><i>${evs.length}</i></div>`+rows.map(({e,i})=>`<div class="xr" data-r="${e[1].split(";")[0]}"><b>${base+i+1}</b><div><div class="xt">${esc(e[0])}</div><div class="xc">${e[1].split(";").map(r=>{const x=xRef(r);return `<span class="xchip" data-r="${r}" style="background:${GB[x[3]][1]}">${x[3]==="MK"?"MK":x[3]}</span>`}).join("")}</div></div></div>`).join("")}).join("")}
+function xBody(){return `<div class="xinfo"><span>📖</span><div>Every Gospel account of Jesus' life arranged chronologically from the four writers.<small>Chronological harmony of the Gospels.</small></div></div><input id="xq" class="xq" placeholder="Search events or a reference (John 3:16)..."><div id="xl">${xList("")}</div>`}
+function xGo(r){const x=xRef(r);if(!x)return;closePanel();S.autoScroll=true;S.v=x[2];goRef(x[0],x[1],x[2])}
+function xBind(el){const q=el.querySelector("#xq"),l=el.querySelector("#xl");const hk=()=>{l.querySelectorAll(".xchip").forEach(c=>c.onclick=ev=>{ev.stopPropagation();xGo(c.dataset.r)});l.querySelectorAll(".xr").forEach(r=>r.onclick=()=>xGo(r.dataset.r))};hk();q.oninput=()=>{l.innerHTML=xList(q.value);hk()}}
+
+async function renderPicker(){const el=$("#pk"),tb=PKB!==null?PKB:S.b;let body="",title=S.tab==="comm"?"Bible Commentary":"Books",back="Cancel",bf=closePanel;
+ if(PK==="book"){const B3="Gen Exo Lev Num Deu Jos Jud Rut 1Sam 2Sam 1Kin 2Kin 1Chr 2Chr Ezr Neh Est Job Psa Pro Ecc Son Isa Jer Lam Eze Dan Hos Joe Amo Oba Jon Mic Nah Hab Zep Hag Zec Mal Mat Mar Luk Joh Act Rom 1Cor 2Cor Gal Eph Phi Col 1The 2The 1Tim 2Tim Tit Phm Heb Jam 1Pet 2Pet 1Joh 2Joh 3Joh Jde Rev".split(" ");
   const btn=i=>`<button class="pkb${i===S.b?" cur":""}" data-b="${i}" title="${esc(BKS[i].de)}">${B3[i]}</button>`;
   const CATS=[["Pentateuch",0,5,"#a08462"],["Historical",5,17,"#e9a23b"],["Wisdom & Poetry",17,22,"#a77bd6"],["Major Prophets",22,27,"#e0626a"],["Minor Prophets",27,39,"#3fb6a8"],["Gospels",39,43,"#4a90e2"],["Acts",43,44,"#2bb3b3"],["Pauline Epistles",44,57,"#7b6fd6"],["General Epistles",57,66,"#4caf72"]];
-  const ot=PKT!==null?PKT:S.b<39;
-  body=`<div class="pkt"><button data-t="1" class="${ot?"on":""}">OT</button><button data-t="0" class="${ot?"":"on"}">NT</button></div>`+CATS.filter(c=>(c[1]<39)===ot).map(([n,a,z,col])=>`<div class="pks">${n}</div><div class="pkg">${[...Array(z-a).keys()].map(i=>{const k=a+i;return `<button class="pkb${k===S.b?" cur":""}" data-b="${k}" title="${esc(BKS[k].de)}" style="--cc:${col}">${B3[k]}</button>`}).join("")}</div>`).join("")} else if(PK==="chap"){title=BKS[tb].de;back="Back";bf=()=>{PK="book";renderPicker()};
+  const tab=PKT!==null?PKT:(S.b<39?"ot":"nt"),ot=tab==="ot";
+  body=tab==="x"?xBody():CATS.filter(c=>(c[1]<39)===ot).map(([n,a,z,col])=>`<div class="pks">${n}</div><div class="pkg">${[...Array(z-a).keys()].map(i=>{const k=a+i;return `<button class="pkb${k===S.b?" cur":""}" data-b="${k}" title="${esc(BKS[k].de)}" style="--cc:${col}">${B3[k]}${PKAU?`<small>${AUT[k]}</small>`:""}</button>`}).join("")}</div>`).join("")} else if(PK==="chap"){title=BKS[tb].de;back="Back";bf=()=>{PK="book";renderPicker()};
   const secs=[];for(let c=1;c<=BKS[tb].n;c++){const h=await chapHeads(tb,c);[...h].sort((x,y)=>x[0]-y[0]).forEach(([v,t])=>secs.push([c,v,t]))}
   body=`<div class="pks">Chapters</div><div class="pkg big">${[...Array(BKS[tb].n).keys()].map(i=>`<button class="pkb${tb===S.b&&i+1===S.c?" cur":""}" data-c="${i+1}">${i+1}</button>`).join("")}</div>`+(secs.length?`<div class="pks">Book Sections</div><div class="pkl">${secs.map(([c,v,t])=>`<button class="pkb sec" data-c="${c}" data-v="${v}">${esc(t)}</button>`).join("")}</div>`:"")}
  else{const pc=PKC||S.c;title=BKS[tb].de+" "+pc;back="Back";bf=()=>{PK="chap";renderPicker()};
   let n=vmax;try{const a=activeBibles()[0],e=a&&(await entsBC(a.id,tb,pc))[0];if(e)n=Math.max(...e.verses.map(v=>v[0]))}catch(e){}
   const hl=[...(await chapHeads(tb,pc))].sort((a,b)=>a[0]-b[0]);
   body=`<div class="pks">Verses</div><div class="pkg big">${[...Array(n).keys()].map(i=>`<button class="pkb${tb===S.b&&pc===S.c&&i+1===S.v?" cur":""}" data-v="${i+1}">${i+1}</button>`).join("")}</div>`+(hl.length?`<div class="pks">Chapter Sections</div><div class="pkl">${hl.map(([v,t])=>`<button class="pkb sec" data-v="${v}">${esc(t)}</button>`).join("")}</div>`:"")}
- el.innerHTML=`<div class="pkh"><span style="width:60px"></span><b>${esc(title)}</b><button id="pkx" style="width:60px;text-align:right">${back}</button></div><div class="pkbody">${body}</div>`;
- $("#pkx").onclick=bf;
- el.querySelectorAll(".pkt [data-t]").forEach(b=>b.onclick=()=>{PKT=b.dataset.t==="1";renderPicker()});
+ el.innerHTML=`<div class="pkh"><button id="pkx">${back}</button><b>${esc(title)}</b></div>${PK==="book"?`<div class="pkrow"><div class="pkt">${[["ot","OT"],["nt","NT"],["x","Extra"]].map(([k,l])=>`<button data-t="${k}" class="${(PKT!==null?PKT:(S.b<39?"ot":"nt"))===k?"on":""}">${l}</button>`).join("")}</div>${(PKT!==null?PKT:(S.b<39?"ot":"nt"))==="x"?"":`<button id="pkau" class="${PKAU?"on":""}">👤 Authors</button>`}</div>`:""}<div class="pkbody">${body}</div>`;
+ $("#pkx").onclick=bf;if($("#pkau"))$("#pkau").onclick=()=>{PKAU=!PKAU;try{localStorage.setItem("bs_au",PKAU?"1":"")}catch(e){}renderPicker()};if(PK==="book"&&(PKT!==null?PKT:(S.b<39?"ot":"nt"))==="x")xBind(el);
+ el.querySelectorAll(".pkt [data-t]").forEach(b=>b.onclick=()=>{PKT=b.dataset.t;renderPicker()});
  el.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{PKB=+b.dataset.b;PK="chap";renderPicker()});
  if(PK==="chap")el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const c=+b.dataset.c;if(b.dataset.v){closePanel();S.autoScroll=true;S.v=+b.dataset.v;goRef(tb,c,+b.dataset.v);return}PKC=c;PK="verse";renderPicker()});
  if(PK==="verse")el.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{closePanel();S.autoScroll=true;goRef(tb,PKC||S.c,+b.dataset.v)});
@@ -1033,7 +1089,7 @@ async function vComm(){
  let h=`<div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start"><div class="chips" style="flex:1">${avl.length>1?avl.map(m=>`<button class="tg${m.id===sel.id?" on":""}" data-cc="${m.id}">${esc((m.short||m.title).slice(0,14))}</button>`).join(""):""}</div><button id="ca">Collapse all</button></div>`;
  if(auto)h+=`<p class="mut" style="margin:4px 0">Your selected commentary has nothing here – showing ${esc(sel.short||sel.title)}.</p>`;
  if(!avl.length)h+=`<p class="mut" style="margin:4px 0">No installed commentary covers ${esc(BKS[S.b].de)} ${S.c}.</p>`;
- h+=`<h3 class="ch">${esc(BKS[S.b].de)}${lv==="b"?"":" "+S.c+(lv==="v"&&S.v?","+S.v:"")}</h3>`;
+ h+=`<h3 class="ch" id="cpk" style="cursor:pointer">${esc(BKS[S.b].de)}${lv==="b"?"":" "+S.c+(lv==="v"&&S.v?","+S.v:"")} ▾</h3>`;
  if(lv==="c")h+=await commHtml(sel,false,true,false);
  else{
   let es=[];
@@ -1044,6 +1100,7 @@ async function vComm(){
   h+=es.length?es.map(e=>{const tt=(e.title||"").trim();return `<details open><summary><span class="r">${esc(rng(e))}</span>${esc(tt&&tt!==rng(e)?tt:"")}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`}).join(""):`<p class="mut" style="text-align:center">${lv==="b"?"No introduction or overview in this commentary.":"No entry for this verse in this commentary."}</p>`}
  main.innerHTML=h;
  main.querySelectorAll("[data-cc]").forEach(b=>b.onclick=()=>{S.cm=b.dataset.cc;S.cs={};save();draw()});
+ if($("#cpk"))$("#cpk").onclick=()=>openPicker("book");
  const ca=$("#ca");if(ca)ca.onclick=()=>{const ds=[...main.querySelectorAll("details")],open=ds.some(d=>d.open);ds.forEach(d=>d.open=!open);ca.textContent=open?"Expand all":"Collapse all"};
  const f=$("#first");if(f)setTimeout(()=>f.scrollIntoView({block:"start"}),30)}
 
@@ -1172,7 +1229,7 @@ async function autoInstallAll(){if(AIRUN)return;AIRUN=true;
  const ui=(t)=>{ov.innerHTML=`<div class="aic"><h3>Installing your library</h3><p class="mut">All Bibles, commentaries, lexicons and books are loaded once and then work offline. Keep the app open.</p><div class="pb2"><i style="width:${Math.round(n/Math.max(1,tot)*100)}%"></i></div><p><b>${n} / ${tot}</b></p><p class="mut" style="min-height:2.6em">${esc(t||"")}</p><button id="aix">Hide</button></div>`;const x=$("#aix");if(x)x.onclick=()=>ov.style.display="none"};
  ov.style.display="flex";ui("Starting …");
  for(const c of list){try{const mod=await installCat(c,t=>ui(t));MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);if(mod.type==="bible"&&!Object.keys(S.sel||{}).length)S.sel[mod.id]=true;if(n===0)drawAll()}catch(e){fail.push(c.title+": "+e.message)}n++;ui(c.title+" ✓")}
- S.ai=1;save();AIRUN=false;
+ S.ai=fail.length?S.ai:CAT.length;save();AIRUN=false;
  const bl=big.filter(c=>!MODS.some(m=>m.src===c.file));
  ov.innerHTML=`<div class="aic"><h3>${fail.length?"Done, with problems":"Library ready ✓"}</h3><p>${n-fail.length} of ${tot} installed.</p>${fail.length?`<p class="mut">${fail.slice(0,5).map(esc).join("<br>")}</p>`:""}${bl.length?`<p class="mut">Large files that must be imported from your device (Menu → Import): ${bl.map(c=>esc(c.file)).join(", ")}.</p>`:""}<button class="p" id="aix">Open</button></div>`;
  $("#aix").onclick=()=>{ov.remove();S.autoScroll=true;drawAll()}}
@@ -1229,10 +1286,10 @@ const CAT=[
  {file:"amp-notes.json",type:"comm",title:"Amplified Study Bible – Notes",short:"AMP-N",desc:"6,300 notes from your Amplified Study Bible.",mb:2.0},
  {file:"bridges-ps119.json",type:"comm",title:"Exposition of Psalm 119 – Charles Bridges",short:"Bridges",desc:"Verse by verse through Psalm 119.",mb:0.9},
  {file:"candlish-1john.json",type:"comm",title:"The First Epistle of John – Robert Candlish",short:"Candlish",desc:"46 lectures on the First Epistle of John.",mb:1.1},
- {file:"ntdeepstudy.json",type:"comm",title:"New Testament Deep Study",short:"Deep Study",desc:"Verse-by-verse deep study of the whole New Testament: phrase studies, renderings and plain-language notes. Very large file – import it from your device.",mb:91},
- {file:"ntcomplete.json",type:"comm",title:"New Testament Commentary (Complete)",short:"NT-K",desc:"Commentary on every verse from Matthew to Jude (Revelation is not in the book).",mb:37},
+ {file:"Deep-Bible-Commentary.json",type:"comm",title:"Deep Bible Commentary",short:"Deep",desc:"Verse-by-verse deep study of the whole New Testament: phrase studies, renderings and plain-language notes. One single file – import it once from your device (Menu → Import).",mb:96},
+ {file:"ntcomplete.json",parts:["ntcomplete.json.gz"],type:"comm",title:"New Testament Commentary (Complete)",short:"NT-K",desc:"Commentary on every verse from Matthew to Jude (Revelation is not in the book).",mb:12},
  {file:"headings-nlt.json",type:"heads",title:"Section headings (from NLT Study Bible)",short:"Headings",desc:"Section titles for the whole Bible (2,400 headings), shown above passages in any Bible.",mb:0.1},
- {file:"macarthur-nt.json",type:"comm",title:"MacArthur New Testament Commentary",short:"MacArthur",desc:"Verse-by-verse commentary on the New Testament (1,175 sections).",mb:33},
+ {file:"macarthur-nt.json",parts:["macarthur-nt.json.gz"],type:"comm",title:"MacArthur New Testament Commentary",short:"MacArthur",desc:"Verse-by-verse commentary on the New Testament (1,175 sections).",mb:11},
  {file:"alexander-hebrews.json",type:"comm",title:"Eric Alexander – Exposition of Hebrews",short:"Alexander",desc:"Sermons on Hebrews.",mb:0.7},
  {file:"nivac-psalms2.json",type:"comm",title:"NIV Application Commentary – Psalms Vol. 2",short:"NIVAC-Ps2",desc:"Psalms 42–106.",mb:3},
  {file:"nivac-pentateuch.json",type:"comm",title:"NIV Application Commentary – Pentateuch",short:"NIVAC-Pent",desc:"Genesis, Exodus, Leviticus, Numbers, Deuteronomy.",mb:8.5},
@@ -1256,7 +1313,18 @@ const CAT=[
  {file:"davenant-determinations.json",type:"other",lang:"Books",title:"Davenant – Determinations of Certain Theological Questions",short:"Davenant",desc:"John Davenant, theological questions.",mb:0.8},
  {file:"thayer.json",type:"dict",title:"Thayer’s Greek-English Lexicon (scan, OCR)",short:"Thayer",desc:"Grimm-Wilke-Thayer, 1889 – detailed Greek NT word studies. Scanned text: Greek words are partly garbled, so search by English meaning or Bible reference (e.g. Jn. iii. 16).",mb:4.5},
  {file:"strongs.json",type:"dict",title:"Strong’s Dictionary",short:"Strong",desc:"Greek (5,523) and Hebrew (8,674): root word, pronunciation, meaning, concordance.",mb:2.3}];
+async function readJ(r,f){if(/\.gz$/i.test(f)){if(typeof DecompressionStream==="undefined")throw new Error("This iOS version cannot unpack .gz files (needs iOS 16.4+).");return await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json()}return r.json()}
+async function getFile(f){let r=null;try{r=await fetch("data/"+f);if(!r.ok)r=null}catch(e){r=null}
+ if(!r){try{r=await fetch(f)}catch(e){throw new Error("Download not possible: "+e.message)}}
+ if(!r.ok)throw new Error(r.status===404?"File "+f+" is missing on your GitHub. Please upload it there (Add file, Upload files).":"Download failed (HTTP "+r.status+")");return r}
+async function installParts(c,msg){const id="m"+Date.now()+Math.random().toString(36).slice(2,5),mod={id,title:c.title,short:c.short,type:c.type,added:Date.now(),count:0,src:c.file};let n=0;
+ for(let p=0;p<c.parts.length;p++){const f=c.parts[p];msg(c.title+": part "+(p+1)+"/"+c.parts.length+" – downloading …");await tick();
+  let j=await readJ(await getFile(f),f);msg(c.title+": part "+(p+1)+"/"+c.parts.length+" – saving …");await tick();let ents=[];
+  for(const[book,chap,v1,ec,ev,title,html]of j.e){ents.push({id:id+"|"+(n++),mod:id,kind:"c",book,chap,v1,ec,ev,title,html});if(ents.length>=300){await bulkEnts(ents);ents=[];await tick()}}
+  await bulkEnts(ents);j=null}
+ mod.count=n;await putOne("mods",mod);return mod}
 async function installCat(c,msg){
+ if(c.parts&&!c.json)return installParts(c,msg);
  let j=c.json;
  if(!j){msg(c.title+": lade herunter …");await tick();
  let r=null;try{r=await fetch("data/"+c.file);if(!r.ok)r=null}catch(e){r=null}
@@ -1418,7 +1486,7 @@ openDB().then(async()=>{MODS=(await allOf("mods")).sort((a,b)=>a.added-b.added);
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
  try{if(location.protocol.startsWith("http")&&"serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
  S.autoScroll=true;bindFrame();auBind();trBind();drawAll();
- if(!MODS.length&&!S.ai&&location.protocol.startsWith("http"))setTimeout(autoInstallAll,400);
+ if(S.ai!==CAT.length&&location.protocol.startsWith("http"))setTimeout(autoInstallAll,400);
  window.__bs={importJson,installCat,CAT,parseRef,parseChap,S,get MODS(){return MODS},importEpub,importText,allOf}});
 
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
