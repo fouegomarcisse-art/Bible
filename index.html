@@ -297,6 +297,18 @@ mark{background:#ffe27a;color:#222}
 .cm .qbox{border:2px solid color-mix(in srgb,var(--fg) 55%,var(--bg));background:color-mix(in srgb,#8fa3b0 25%,var(--bg));padding:.6em .8em;margin:1em 0;font-weight:700}
 .cm .qbox .au{display:block;font-weight:400;font-size:.85em;color:var(--mut);margin-top:.4em}
 .cm .npp,.cm .dd{text-align:justify}
+/* NT Phone Edition – Expanded */
+.cm .nbrief,.cm .plain{background:color-mix(in srgb,#b8923a 13%,var(--bg));border-left:4px solid #b8923a;border-radius:4px;padding:.4em .9em;margin:.9em 0}
+.cm .plain{background:color-mix(in srgb,#4a8fb8 13%,var(--bg));border-left-color:#4a8fb8}
+.cm .tag,.cm .lab{font-variant:small-caps;letter-spacing:.06em;font-weight:800;color:color-mix(in srgb,#c9a24a 62%,var(--fg));margin:.2em 0 .25em;font-size:.95em;text-align:left}
+.cm .scripture{border-left:3px solid #b8923a;background:color-mix(in srgb,#b8923a 10%,var(--bg));padding:.4em .9em;margin:.9em 0;border-radius:0 6px 6px 0}.cm .scripture p{margin:0}
+.cm .nvs .vn,.cm .vn{color:color-mix(in srgb,#c9a24a 62%,var(--fg));font-weight:800;font-size:.72em;vertical-align:super;margin-right:3px}
+.cm .phr{margin:1em 0}.cm .sec{font-size:1.15em;font-weight:800;color:color-mix(in srgb,#c9a24a 62%,var(--fg));border-bottom:2px solid #b8923a;padding-bottom:.15em;margin:1.2em 0 .5em;text-align:left}
+.cm .ph strong{font-weight:800}.cm .ph .ar,.cm .ar>span{color:color-mix(in srgb,#c9a24a 62%,var(--fg));font-weight:700}
+.cm .side.refs{background:color-mix(in srgb,#4a8fb8 12%,var(--bg));border-radius:6px;padding:.3em .9em;margin:.9em 0}.cm .side.refs ul{margin:.3em 0}
+.cm .note{border:1px solid color-mix(in srgb,#b8923a 40%,var(--bg));border-left:4px solid #b8923a;border-radius:6px;padding:.3em .9em;margin:1em 0}.cm .nt{font-weight:800;margin:.3em 0}
+.cm .qref{font-weight:700;margin:.8em 0 .2em}.cm .qtext,.cm .xq{border-left:3px solid #4a8fb8;padding-left:.8em;font-style:italic}
+.cm .q{background:color-mix(in srgb,#b8923a 8%,var(--bg));padding:.4em .8em;border-radius:6px}
 </style>
 </head>
 <body>
@@ -1372,7 +1384,7 @@ const CAT=[
  {file:"bridges-ps119.json",type:"comm",title:"Exposition of Psalm 119 – Charles Bridges",short:"Bridges",desc:"Verse by verse through Psalm 119.",mb:0.9},
  {file:"candlish-1john.json",type:"comm",title:"The First Epistle of John – Robert Candlish",short:"Candlish",desc:"46 lectures on the First Epistle of John.",mb:1.1},
  {file:"Deep-Bible-Commentary.json",type:"comm",title:"Deep Bible Commentary",short:"Deep",desc:"Verse-by-verse deep study of the whole New Testament: phrase studies, renderings and plain-language notes. One single file – import it once from your device (Menu → Import).",mb:96},
- {file:"ntcomplete.json",parts:["ntcomplete.json.gz"],type:"comm",title:"New Testament Commentary (Complete)",short:"NT-K",desc:"Commentary on every verse from Matthew to Jude (Revelation is not in the book).",mb:12},
+ {file:"NT-Phone-Edition-Expanded.json",type:"comm",lang:"Commentaries",title:"NT Phone Edition – Expanded",short:"NT Expanded",desc:"The full New Testament study commentary in its expanded edition: brief, phrase by phrase, plain terms, deeper studies. One large file – import it once from your device (Menu → Import).",mb:85},
  {file:"headings-nlt.json",type:"heads",title:"Section headings (from NLT Study Bible)",short:"Headings",desc:"Section titles for the whole Bible (2,400 headings), shown above passages in any Bible.",mb:0.1},
  {file:"macarthur-nt.json",parts:["macarthur-nt.json.gz"],type:"comm",title:"MacArthur New Testament Commentary",short:"MacArthur",desc:"Verse-by-verse commentary on the New Testament (1,175 sections).",mb:11},
  {file:"alexander-hebrews.json",type:"comm",title:"Eric Alexander – Exposition of Hebrews",short:"Alexander",desc:"Sermons on Hebrews.",mb:0.7},
