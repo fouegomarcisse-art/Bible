@@ -309,6 +309,9 @@ mark{background:#ffe27a;color:#222}
 .cm .note{border:1px solid color-mix(in srgb,#b8923a 40%,var(--bg));border-left:4px solid #b8923a;border-radius:6px;padding:.3em .9em;margin:1em 0}.cm .nt{font-weight:800;margin:.3em 0}
 .cm .qref{font-weight:700;margin:.8em 0 .2em}.cm .qtext,.cm .xq{border-left:3px solid #4a8fb8;padding-left:.8em;font-style:italic}
 .cm .q{background:color-mix(in srgb,#b8923a 8%,var(--bg));padding:.4em .8em;border-radius:6px}
+.cm .ph{background:none!important;color:inherit!important;height:auto!important;padding:0!important;display:block!important;flex:none;align-items:normal;justify-content:normal;margin:.6em 0;text-align:justify}
+.cm span.ar{margin:0!important;text-indent:0!important;padding:0!important;display:inline}
+.cm .xq{display:block;width:auto!important;margin:.8em 0!important;padding:0 0 0 .8em!important;background:none!important;border:0!important;border-left:3px solid #4a8fb8!important;border-radius:0!important;font-style:italic;color:inherit!important;font-size:inherit!important}
 </style>
 </head>
 <body>
@@ -736,8 +739,8 @@ async function refPopup(b,c,v1,v2){
  let bi=activeBibles()[0],vs=[];
  try{const e=(await entsBC(bi.id,b,c))[0];vs=e?e.verses.filter(x=>x[0]>=v1&&x[0]<=v2):[]}catch(er){}
  if(!vs.length){for(const m of mods("bible")){try{const e=(await entsBC(m.id,b,c))[0];const f=e?e.verses.filter(x=>x[0]>=v1&&x[0]<=v2):[];if(f.length){bi=m;vs=f;break}}catch(er){}}}
- const old=$("#spp");if(old)old.remove();
- const d=document.createElement("div");d.id="spp";
+ const old=$("#rp");if(old)old.remove();
+ const d=document.createElement("div");d.id="rp";
  const ttl=refShort(b,c,v1)+(v2>v1?"-"+v2:"")+" "+(bi.short||bi.title);
  d.innerHTML=`<div class="rpc"><div class="rph"><button id="rpx" aria-label="Close">✕</button><b>${esc(ttl)}</b><button id="rpo" aria-label="Open">↗</button></div><div class="rpb">${vs.length?vs.map(x=>`<p><sup>${x[0]}</sup> ${esc(String(x[1]).replace(tag,"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim())}</p>`).join(""):'<p class="mut">This passage is not in an installed Bible.</p>'}</div></div>`;
  document.body.appendChild(d);
