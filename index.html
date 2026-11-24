@@ -272,6 +272,31 @@ mark{background:#ffe27a;color:#222}
 .d_ref{color:var(--dg);font-weight:700}
 .d_phrase-clarification-title,.d_study-topic,.d_example-topic-title,.d_luke-meaning-title{color:var(--dg)}
 .vp{scroll-margin-top:122px}
+/* Kommentar im Referenz-Layout: nummerierte Kästchen, fette Titel, Blocksatz, grüne Links */
+.rs details{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:16px 0 0!important}
+.rs details.act{border-left:3px solid var(--acc)!important;padding-left:8px}
+.rs summary{padding:0!important;font-weight:400;list-style:none;display:block;line-height:1.5}
+.rs summary::-webkit-details-marker{display:none}
+.rs summary .cn{display:inline-block;min-width:34px;text-align:center;font-weight:700;padding:2px 10px;margin-right:10px;background:color-mix(in srgb,#8fa3b0 35%,var(--bg));border:2px solid color-mix(in srgb,var(--fg) 55%,var(--bg));color:var(--fg)}
+.rs summary .r{color:var(--fg)!important;margin:0 4px 0 0;font-weight:400}
+.rs summary b{font-weight:800}
+.rs .cm{text-align:justify;hyphens:auto;-webkit-hyphens:auto;line-height:1.55;margin-top:6px}
+.rs .cm p{margin:.6em 0}
+.rs .cm ul,.rs .cm ol{padding-left:2.2em;margin:.5em 0}.rs .cm li{margin:.35em 0}
+.rs .cm blockquote{margin:.6em 0 .6em 1.2em;padding:0 0 0 .8em;border-left:3px solid var(--line)}
+.rs a.xref{color:#1f8a3a!important;text-decoration:underline!important;border-bottom:0!important}
+.rs a.sn{color:#1f8a3a}
+/* Referenz-Optik: Deeper-Study-Kasten, eingerückte Punkte, Pfeil-Listen */
+.cm .ndeeper{background:color-mix(in srgb,#8fa3b0 36%,var(--bg));border:2px solid color-mix(in srgb,var(--fg) 65%,var(--bg));padding:.6em .8em .8em;margin:18px 0;text-align:justify}
+.cm .ndl{font-variant:small-caps;font-size:1.45em;font-weight:800;letter-spacing:.03em;margin:.1em 0 .5em;text-align:left}
+.cm .ndt{margin:.4em 0}
+.cm .di,.cm .bl,.cm .dq2{margin:.15em 0 .15em 2.6em;text-indent:0;text-align:justify}
+.cm .di+.di,.cm .bl+.bl{margin-top:0}
+.cm .ar{margin:.15em 0 .15em 1.4em;text-indent:-1.3em;padding-left:1.3em}
+.cm .pt{margin:1em 0 .3em;font-weight:800}
+.cm .qbox{border:2px solid color-mix(in srgb,var(--fg) 55%,var(--bg));background:color-mix(in srgb,#8fa3b0 25%,var(--bg));padding:.6em .8em;margin:1em 0;font-weight:700}
+.cm .qbox .au{display:block;font-weight:400;font-size:.85em;color:var(--mut);margin-top:.4em}
+.cm .npp,.cm .dd{text-align:justify}
 </style>
 </head>
 <body>
@@ -1127,11 +1152,11 @@ async function commHtml(sel,showTitle,setFirst,skipEmpty){
  let es=await entsBC(sel.id,S.b,S.c);if(S.c>1)es=es.concat((await entsBC(sel.id,S.b,S.c-1)).filter(e=>e.ec>=S.c));
  es.sort((a,b)=>a.chap-b.chap||a.v1-b.v1);
  const rng=e=>e.v1?(e.chap+":"+e.v1+(e.ev!==e.v1||e.ec!==e.chap?"–"+(e.ec!==e.chap?e.ec+":":"")+e.ev:"")):"";
- let h=showTitle?`<h3 class="ch" style="color:var(--acc);margin-top:1.2em">${esc(sel.title)}</h3>`:"";
+ let h=showTitle?`<h3 class="ch" style="color:var(--acc);margin-top:1.2em">${esc(sel.title)}</h3>`:"";let ni=0;
  if(!es.length)h+=`<p class="mut" style="text-align:center">No entry for this chapter${showTitle?"":" in this commentary"}.</p>`;
  if(skipEmpty&&!es.length)return"";const anyAct=es.some(covers);let first=true;
  for(const e of es){const a=covers(e);const r=rng(e)||"Overview",tt=(e.title||"").trim(),good=e.v1&&tt&&tt!==r&&!/^\d+:\d+([–-]\d+)?$/.test(tt),pv=good?tt:(e.v1?plain(e.html).slice(0,70)+"…":"");
-  h+=`<details class="${a?"act":""}" open ${a&&first&&setFirst?'id="first"':""}><summary><span class="r">${r}</span>${esc(pv)}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
+  h+=`<details class="${a?"act":""}" open ${a&&first&&setFirst?'id="first"':""}><summary><span class="cn">${++ni}</span><span class="r">(${r})</span> <b>${esc(pv)}</b></summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`;if(a)first=false}
  return h}
 async function vComm(){
  const cs=mods("comm");
@@ -1152,8 +1177,8 @@ async function vComm(){
   else{es=await entsBC(sel.id,S.b,S.c);if(S.c>1)es=es.concat((await entsBC(sel.id,S.b,S.c-1)).filter(e=>e.ec>=S.c));es=es.filter(e=>e.v1>0&&e.chap<=S.c&&(S.c>e.chap||S.v>=e.v1)&&(S.c<e.ec||S.v<=e.ev))}
   es.sort((a,b)=>a.chap-b.chap||a.v1-b.v1);
   const rng=e=>e.v1?(e.chap+":"+e.v1+(e.ev!==e.v1||e.ec!==e.chap?"–"+(e.ec!==e.chap?e.ec+":":"")+e.ev:"")):"Ch. "+e.chap;
-  h+=es.length?es.map(e=>{const tt=(e.title||"").trim();return `<details open><summary><span class="r">${esc(rng(e))}</span>${esc(tt&&tt!==rng(e)?tt:"")}</summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`}).join(""):`<p class="mut" style="text-align:center">${lv==="b"?"No introduction or overview in this commentary.":"No entry for this verse in this commentary."}</p>`}
- main.innerHTML=h;
+  h+=es.length?es.map((e,ix)=>{const tt=(e.title||"").trim();return `<details open><summary><span class="cn">${ix+1}</span><span class="r">(${esc(rng(e))})</span> <b>${esc(tt&&tt!==rng(e)?tt:"")}</b></summary><div class="cm" data-wk="e:${e.id}">${e.html}</div></details>`}).join(""):`<p class="mut" style="text-align:center">${lv==="b"?"No introduction or overview in this commentary.":"No entry for this verse in this commentary."}</p>`}
+ main.innerHTML=`<div class="rs">${h}</div>`;
  main.querySelectorAll("[data-cc]").forEach(b=>b.onclick=()=>{S.cm=b.dataset.cc;S.cs={};save();draw()});
  if($("#cpk"))$("#cpk").onclick=()=>openPicker("book");
  const ca=$("#ca");if(ca)ca.onclick=()=>{const ds=[...main.querySelectorAll("details")],open=ds.some(d=>d.open);ds.forEach(d=>d.open=!open);ca.textContent=open?"Expand all":"Collapse all"};
