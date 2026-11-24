@@ -243,6 +243,35 @@ mark{background:#ffe27a;color:#222}
 .xr{display:flex;gap:14px;padding:12px 14px;align-items:flex-start}.xr>b{min-width:38px;height:38px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:.9em}
 .xt{font-size:1.1em}.xc{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.xchip{color:#fff;font-weight:800;font-size:.72em;padding:3px 9px;border-radius:999px}
 .d_section{font-size:1.15em;margin:18px 0 6px}.d_csub{color:var(--mut);font-style:italic;margin:0 0 8px}.d_synthesis{padding:8px 12px;border-left:3px solid var(--acc);background:#0000000a;border-radius:6px;margin:8px 0}.d_refs,.d_scripture-reference{color:var(--acc);font-size:.9em;margin:2px 0 6px}.d_alt,.d_language-note,.d_watch{color:var(--mut);font-size:.92em}.d_plain-wording,.d_plain-clause{padding:6px 10px;background:#2f7bf611;border-radius:8px;margin:6px 0}.d_renderings,.d_connections,.d_side{margin:8px 0;padding:6px 12px;background:#0000000a;border-radius:8px}.d_full-verse{font-style:italic}.d_study-questions{padding-left:20px}.d_pray,.d_reflect{font-style:italic;color:var(--mut)}.d_key{color:var(--acc)}.d_dt{font-weight:700;margin:8px 0 0}.d_dl{margin:0 0 6px}
+/* Deep Bible Commentary: farbige Struktur wie im Original (Gold, Tönungen) */
+:root{--dg:color-mix(in srgb,#c9a24a 62%,var(--fg));--dg2:#b8923a;--dgt:color-mix(in srgb,#b8923a 13%,var(--bg));--dgb:color-mix(in srgb,#4a8fb8 13%,var(--bg));--dgr:color-mix(in srgb,#b8923a 38%,var(--bg))}
+.d_section{font-size:1.25em;color:var(--dg);border-bottom:2px solid var(--dg2);padding-bottom:.2em;margin:1.4em 0 .5em}
+.d_csub{text-align:center;font-style:italic;color:var(--mut)}
+.d_sub{font-size:.95em!important;font-variant:small-caps;text-transform:none!important;letter-spacing:.06em;color:var(--dg)!important;border-bottom:1px dotted var(--dgr);margin:1.3em 0 .35em!important;font-weight:700}
+.d_phrase{font-style:italic;margin:1.1em 0 .2em!important;color:var(--fg)}
+.d_kjv{border-left:3px solid var(--dg2)!important;background:var(--dgt)!important;padding:.5em .9em!important;border-radius:0 6px 6px 0;margin:.7em 0!important}.d_kjv p{margin:0}
+.d_vn{color:var(--dg)!important;font-weight:700;font-size:.7em;vertical-align:super;line-height:0}
+.d_brief{color:var(--mut)!important;font-style:normal!important;margin:.3em 0 .6em}
+.d_overview{background:var(--dgt)!important;border-left:4px solid var(--dg2);border-radius:4px!important;padding:.5em .9em!important;margin:.8em 0 1.3em}
+.d_lab,.d_lab2{font-variant:small-caps;text-transform:none!important;letter-spacing:.05em;font-weight:700!important;color:var(--dg)!important;font-size:.95em!important}
+.d_renderings,.d_side{background:var(--dgb)!important;padding:.35em .9em!important;border-radius:6px!important;margin:.8em 0}
+.d_further,.d_deeper{border:1px solid var(--dg2);border-radius:6px;padding:.25em .9em .45em;margin:1.2em 0;background:var(--dgt)}
+.d_synthesis{background:var(--dgt)!important;border:1px solid var(--dgr);border-left:4px solid var(--dg)!important;border-radius:4px!important;padding:.3em 1em!important;margin:1.4em 0!important}
+.d_syn{color:var(--dg)}
+.d_pray{color:var(--mut)!important;padding-left:.7em;border-left:3px dotted var(--dg2);font-style:normal!important}
+.d_living{border-left:3px solid var(--dg);padding-left:.7em}
+.d_believers{background:var(--dgt);padding:.4em .7em;border-radius:6px}
+.d_pl{color:var(--dg)}.d_pl em{font-weight:700}
+.d_scripture-reference,.d_refs,.d_example-references,.d_luke-references{color:var(--dg)!important}
+.d_alt{margin-left:1em}
+.d_key{color:var(--dg)}
+.d_connected-scripture,.d_biblical-example-topic,.d_parable-depth,.d_biblical-parable-expansion{border:1px solid var(--dgr);border-left:4px solid var(--dg2);border-radius:6px;padding:.3em .9em;margin:1em 0;background:var(--dgt)}
+.d_nsec{border-top:1px solid var(--dgr);margin-top:1em;padding-top:.3em}
+.d_study-questions li{margin:.3em 0}
+.d_terms .d_dt,.d_dt{color:var(--dg)}
+.d_ref{color:var(--dg);font-weight:700}
+.d_phrase-clarification-title,.d_study-topic,.d_example-topic-title,.d_luke-meaning-title{color:var(--dg)}
+.vp{scroll-margin-top:122px}
 </style>
 </head>
 <body>
@@ -877,7 +906,7 @@ async function vBible(){
   r.addEventListener("contextmenu",e=>{e.preventDefault();go()});r.addEventListener("click",e=>{if(r._lp){r._lp=0;e.stopPropagation();e.preventDefault()}},true)});
  main.querySelectorAll(".vp").forEach(el=>el.onclick=e=>{if(e.target.closest("a.sn"))return;const v=+el.dataset.v;const now=Date.now();if(el._lt&&now-el._lt<320&&!e.target.closest("a.vr")){el._lt=0;main.querySelectorAll(".vb2").forEach(x=>x.remove());copyVerse(per,v);return}el._lt=now;S.v=v;save();
   main.querySelectorAll(".vp.sel").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");verseBar(v,hl[v]||0,bm.has(v),per)});
- const cv=main.querySelector(".vp.sel");if(cv&&S.autoScroll){cv.scrollIntoView({block:"center"});S.autoScroll=false}}
+ if(S.autoScroll){const cv=main.querySelector('.vp[data-v="'+S.v+'"]');if(cv){main.querySelectorAll(".vp.sel").forEach(x=>x.classList.remove("sel"));cv.classList.add("sel");const go=()=>cv.scrollIntoView({block:"start"});go();setTimeout(go,120)}S.autoScroll=false}}
 
 /* ===== Wort-Markierungen: Textmarker, Unterstreichen, Textfarbe ===== */
 const WH=["#ffe27a","#b9f0b0","#b6dcff","#ffc2dc","#ffb86b"],WC=["#c0392b","#1f6fb5","#1f8a4c","#8e44ad","#d35400","#111111"];
@@ -975,14 +1004,15 @@ function verseBar(v,col,isBm,per){
  const bar=document.createElement("div");bar.className="vb2";
  const bt=k=>k==="auto"?`<button data-k="auto" class="${S.auto?"on":""}" aria-label="Auto">${ico("auto",18)}<span>Auto</span></button>`:`<button data-k="${k}" class="${k==="bm"&&isBm?"on":""}">${ico(k)}<span>${TBN[k]}</span></button>`;
  const grp=(()=>{const h=tbl.slice();const i=h.indexOf("cm");if(i>=0&&h[i+1]==="auto"){const a=bt("cm")+bt("auto");h.splice(i,2,"__g");return h.map(k=>k==="__g"?`<div class="spl">${a}</div>`:bt(k)).join("")}return h.map(bt).join("")})();
- bar.innerHTML=`<div class="tb">${grp}<button data-k="cust">${ico("cust")}<span>Edit</span></button></div><div class="vcard" hidden></div>`;
+ bar.innerHTML=`<div class="tb">${col?`<button data-k="unhl" class="on" style="color:#d33">${ico("hl",18)}<span>✕ Highlight</span></button>`:""}${grp}<button data-k="cust">${ico("cust")}<span>Edit</span></button></div><div class="vcard" hidden></div>`;
  vp.after(bar);const card=bar.querySelector(".vcard");
  const show=h=>{card.innerHTML=h;card.hidden=false;return card};
  const setOn=k=>bar.querySelectorAll(".tb button").forEach(b=>b.classList.toggle("on",(b.dataset.k===k)||(b.dataset.k==="bm"&&isBm)||(b.dataset.k==="auto"&&S.auto)));
  const vt=vplain(per,v);const ref=refName(S.b,S.c,v);
  const words=()=>{const seen=new Set(),out=[];for(const w of(vt.t.match(/[A-Za-zÀ-ÿ'’-]+/g)||[])){const k=w.toLowerCase().replace(/^['’-]+|['’-]+$/g,"");if(k.length<3||STOP.has(k)||seen.has(k))continue;seen.add(k);out.push(k)}return out};
  const toNote=()=>{setOn("note");show(`<div class="mut"><b>Note on ${esc(ref)}</b></div><textarea id="nt" rows="3" placeholder="Your note …" style="width:100%"></textarea><div class="row" style="margin-top:8px"><button class="p" id="ns">Save</button><button id="nc">Cancel</button></div>`);
-  $("#nt").focus();$("#nc").onclick=()=>{card.hidden=true;setOn("")};$("#ns").onclick=async()=>{const text=$("#nt").value.trim();if(text)await putOne("notes",{id:"n"+Date.now(),kind:"note",b:S.b,c:S.c,v,text,t:Date.now()});card.hidden=true;setOn("");draw(true)}};
+  allOf("notes").then(ns=>{const mine=ns.filter(n=>n.kind==="note"&&n.b===S.b&&n.c===S.c&&n.v===v);if(!mine.length)return;const box=document.createElement("div");box.innerHTML=mine.map(n=>`<div class="row" style="align-items:flex-start;margin-top:8px;gap:8px"><div style="flex:1;font-size:.95em;white-space:pre-wrap">${esc(n.text)}</div><button data-dn2="${n.id}" style="color:#d33">Delete</button></div>`).join("");card.append(box);box.querySelectorAll("[data-dn2]").forEach(b=>b.onclick=async()=>{await delOne("notes",b.dataset.dn2);card.hidden=true;setOn("");toast("Note deleted");draw(true)})});
+ $("#nt").focus();$("#nc").onclick=()=>{card.hidden=true;setOn("")};$("#ns").onclick=async()=>{const text=$("#nt").value.trim();if(text)await putOne("notes",{id:"n"+Date.now(),kind:"note",b:S.b,c:S.c,v,text,t:Date.now()});card.hidden=true;setOn("");draw(true)}};
  const toBm=async()=>{const id=`b:${S.b}:${S.c}:${v}`;if(isBm)await delOne("notes",id);else await putOne("notes",{id,kind:"bm",b:S.b,c:S.c,v,t:Date.now()});isBm=!isBm;const b=bar.querySelector('[data-k="bm"]');if(b)b.classList.toggle("on",isBm)};
  /* --- Kommentar-Karte --- */
  let cmI=0,col_=false;
@@ -1045,6 +1075,7 @@ function verseBar(v,col,isBm,per){
    vp.querySelectorAll(".tx").forEach(x=>{x.className=x.className.replace(/\bh\d\b/g,"").trim()+(col?" h"+col:"")});card.querySelectorAll("[data-col]").forEach(x=>x.classList.toggle("on",+x.dataset.col===col))})};
  const txt=()=>ref+" – "+vt.t+" ("+(vt.m?vt.m.short||vt.m.title:"")+")";
  const act=async(k)=>{
+  if(k==="unhl"){await delOne("notes",`h:${S.b}:${S.c}:${v}`);toast("Highlight removed");draw(true);return}
   if(k==="back"){bar.remove();main.querySelectorAll(".vp.sel").forEach(x=>x.classList.remove("sel"));return}
   if(k==="cm")return toCm();
   if(k==="auto"){S.auto=!S.auto;save();setOn(card.hidden?"":"cm");return}
@@ -1339,7 +1370,9 @@ const CAT=[
  {file:"tmov.json",type:"other",lang:"Books",title:"The Mystery of Venoms",short:"Venoms",desc:"Ikechukwu John Anosike.",mb:0.1},
  {file:"atti.json",type:"other",lang:"Books",title:"ATTI (testimonies & modules)",short:"ATTI",desc:"Spirit Revelation Ecclesia.",mb:0.1},
  {file:"demonology.json",type:"other",lang:"Books",title:"Demonology (scanned, OCR)",short:"Demonology",desc:"Pastor John Anosike.",mb:0.3},
+ {file:"davenant-colossians.json",type:"other",lang:"Books",title:"Davenant – Exposition of Colossians",short:"Davenant Col.",desc:"Bishop John Davenant, verse-by-verse lectures on Colossians (2 volumes, 1831 translation). Scanned text with OCR errors.",mb:2.7},
  {file:"davenant-determinations.json",type:"other",lang:"Books",title:"Davenant – Determinations of Certain Theological Questions",short:"Davenant",desc:"John Davenant, theological questions.",mb:0.8},
+ {file:"thayer-vol2.json",type:"dict",title:"Thayer’s Greek-English Lexicon, Vol. 2 (Λ–Ω, Strong’s-numbered)",short:"Thayer Λ–Ω",desc:"Joseph Thayer, volume 2 (Lambda–Omega): clean text keyed to Strong’s numbers G2975–G5624, so it appears in the Strong card when you tap a number. Volume 1 (Alpha–Kappa) is not included yet.",mb:2.3},
  {file:"thayer.json",type:"dict",title:"Thayer’s Greek-English Lexicon (scan, OCR)",short:"Thayer",desc:"Grimm-Wilke-Thayer, 1889 – detailed Greek NT word studies. Scanned text: Greek words are partly garbled, so search by English meaning or Bible reference (e.g. Jn. iii. 16).",mb:4.5},
  {file:"strongs.json",type:"dict",title:"Strong’s Dictionary",short:"Strong",desc:"Greek (5,523) and Hebrew (8,674): root word, pronunciation, meaning, concordance.",mb:2.3}];
 async function readJ(r,f){if(/\.gz$/i.test(f)){if(typeof DecompressionStream==="undefined")throw new Error("This iOS version cannot unpack .gz files (needs iOS 16.4+).");return await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json()}return r.json()}
